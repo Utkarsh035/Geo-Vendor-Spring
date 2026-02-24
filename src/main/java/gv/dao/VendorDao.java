@@ -172,45 +172,40 @@ public class VendorDao {
 		return status;
 	}
 	public Business businessProfile(String emailId) {
-		con=DbConnection.openConnection();
-		String selectQuery="select * from business where email=?";
-		PreparedStatement ps=null;
-		ResultSet rs=null;
-		Business bs=null;
-		
-		try {
-			ps=con.prepareStatement(selectQuery);
-			ps.setString(1,emailId);
-			System.out.println(ps);
-			rs=ps.executeQuery();
-			rs.next();//place the cursor at that row
-			//email, business_category, business_name, description, location_lat, location_long, phone, address, gst_no, business_icon
-			String bName=rs.getString("business_name");
-			String bPhone=rs.getString("phone");
-			String bAddress=rs.getString("address");
-			String bIcon=rs.getString("business_icon");
-			String bgst=rs.getString("gst_no");
-			String bphoto=rs.getString("business_photo");
-			
-			bs=new Business();
-			
-			bs.setEmail(emailId);
-			bs.setBusiness_name(bName);
-			bs.setPhone(bPhone);
-			bs.setAddress(bAddress);
-			bs.setBusiness_icon(bIcon);
-			bs.setGst_no(bgst);
-			bs.setBusiness_photo(bphoto);
-			
-			
-		}
-		catch(SQLException se) {
-			se.printStackTrace();
-			
-		}
-		return bs;
-	}
+	    con = DbConnection.openConnection();
+	    String selectQuery = "select * from business where email=?";
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    Business bs = null;
 
+	    try {
+	        ps = con.prepareStatement(selectQuery);
+	        ps.setString(1, emailId);
+	        rs = ps.executeQuery();
+
+	        if (rs.next()) {
+
+	            bs = new Business();   // ✅ Create object FIRST
+
+	            bs.setEmail(emailId);
+	            bs.setBusiness_category(rs.getString("business_category"));
+	            bs.setBusiness_name(rs.getString("business_name"));
+	            bs.setDescription(rs.getString("description"));
+	            bs.setPhone(rs.getString("phone"));
+	            bs.setAddress(rs.getString("address"));
+	            bs.setGst_no(rs.getString("gst_no"));
+	            bs.setBusiness_icon(rs.getString("business_icon"));
+	            bs.setBusiness_photo(rs.getString("business_photo"));
+	            bs.setLocation_lat(rs.getString("location_lat"));
+	            bs.setLocation_long(rs.getString("location_long"));
+	        }
+
+	    } catch (SQLException se) {
+	        se.printStackTrace();
+	    }
+
+	    return bs;
+	}
 	public int editBusiness(Business bs, String email) {
 		int status=0;
 		con=DbConnection.openConnection();

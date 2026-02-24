@@ -140,11 +140,21 @@
                     </div>
                     <% } %>
 
-                        <% String email=(String)session.getAttribute("sessionEmail"); if(email==null||session.isNew()){
-                            request.setAttribute("message",CustomMessages.AUTHORISE_ERROR); RequestDispatcher
-                            rd=request.getRequestDispatcher("user/user_login.jsp"); rd.forward(request, response); }
-                            else { VendorDao dao=new VendorDao(); Vendor v=dao.vendorProfile(email); String
-                            uploadPath=request.getContextPath(); String imagePath=uploadPath+"/"+v.getProfile_pic(); %>
+                     <%
+String email = (String) session.getAttribute("sessionEmail");
+
+if(email == null || session.isNew()){
+    request.setAttribute("message", CustomMessages.AUTHORISE_ERROR);
+    RequestDispatcher rd = request.getRequestDispatcher("/vendor/vendor_login.jsp");
+    rd.forward(request, response);
+    return;   // ✅ THIS IS THE KEY
+}
+
+VendorDao dao = new VendorDao();
+Vendor v = dao.vendorProfile(email);
+String uploadPath = request.getContextPath();
+String imagePath = uploadPath + "/" + v.getProfile_pic();
+%>
                             <%@include file="/vendor/vendor_header.html" %>
 
                                 <div class="map-page-header">
@@ -219,7 +229,7 @@
                                         }
                                         return true;
                                     }
-<% } %>
+
                                 </script>
                                 <script
                                     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

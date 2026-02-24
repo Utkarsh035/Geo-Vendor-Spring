@@ -53,7 +53,7 @@ public class Business_Details extends HttpServlet {
 		iconMap.put("school", "fas fa-school");
 		iconMap.put("hospital", "fas fa-hospital");
 		iconMap.put("hotel", "fas fa-hotel");
-		iconMap.put("resturant", "fas fa-utensils");
+		iconMap.put("restaurant", "fas fa-utensils");
 		iconMap.put("private_office", "fas fa-building");
 		iconMap.put("other", "fas fa-map-marker-alt");
 		
@@ -69,8 +69,12 @@ public class Business_Details extends HttpServlet {
 		
 		
 		
-		HttpSession hs=request.getSession(false);
-		String email =(String)hs.getAttribute("sessionEmail");
+		HttpSession hs = request.getSession(false);
+		if(hs == null){
+		    response.sendRedirect("/GeoVendor/vendor/vendor_login.jsp");
+		    return;
+		}
+		String email = (String) hs.getAttribute("sessionEmail");
 		
 		
 		 //fetching uploaded file data
@@ -110,7 +114,8 @@ public class Business_Details extends HttpServlet {
 		
 		
 		
-		Business bs = new Business(email, bcategory, bname, bdescription, bcategory, bdescription, bphone, baddress, bgst,dbPath);
+		Business bs = new Business(email, bcategory, bname, bdescription, bphone, baddress, bgst);
+		bs.setBusiness_photo(dbPath);
 	
 		System.out.println(iconMap.get(bcategory));
 		bs.setBusiness_icon(iconMap.get(bcategory));
@@ -120,7 +125,9 @@ public class Business_Details extends HttpServlet {
 		
 		int status=dao.addBusiness(email,bs);
 		if(status>0) {
-			response.sendRedirect("/GeoVendor/vendor/add_location.jsp");
+		    response.sendRedirect("/GeoVendor/vendor/add_location.jsp");
+		} else {
+		    response.getWriter().println("Insert Failed!");
 		}
 		
 	}

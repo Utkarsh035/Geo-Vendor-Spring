@@ -1,77 +1,94 @@
-
-<nav class="navbar navbar-dark  fixed-top"
-	style="background-color: #83afd4;">
+<nav class="navbar navbar-dark fixed-top"
+	style="background: var(--primary); box-shadow: var(--shadow-md); border-bottom: 1px solid rgba(255,255,255,0.1);">
 	<div class="container-fluid">
-		<!-- <a class="navbar-brand" href="#">Logo</a>  -->
-		<button class="navbar-toggler" type="button"
-			data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar"
-			aria-controls="offcanvasDarkNavbar">
+		<button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas"
+			data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
 			<span class="navbar-toggler-icon"></span>
 		</button>
-		<div class="offcanvas offcanvas-start "
-			style="background-color: #83afd4;" tabindex="-1"
+		<div class="offcanvas offcanvas-start" style="background: #0f172a; color: white;" tabindex="-1"
 			id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-			<div class="offcanvas-header">
-				<h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel"
-					style="color: white;">
-					<b>Hello,Admin</b>
+			<div class="offcanvas-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding: 2rem 1.5rem;">
+				<h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">
+					<span style="font-weight: 800; letter-spacing: -0.5px; font-size: 1.5rem;">Geo<span
+							style="color: var(--primary);">Vendor</span></span>
+					<div style="font-size: 0.85rem; font-weight: 400; color: #94a3b8; margin-top: 4px;">Admin Dashboard
+					</div>
 				</h5>
-				<button type="button" class="btn-close btn-close-white"
-					data-bs-dismiss="offcanvas" aria-label="Close"></button>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+					aria-label="Close"></button>
 			</div>
-			<div class="offcanvas-body">
-				<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-					<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="/GeoVendor/admin/admin_home.jsp"><i class="fas fa-home"></i>Home</a></li>
-
-					<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="/GeoVendor/admin/all_contacts.jsp"><i class="fas fa-address-book"></i>View Contact</a></li>
-					<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="/GeoVendor/admin/all_feedback.jsp"><i class="fas fa-comments"></i>User Feedback</a></li>
-						<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="/GeoVendor/admin/vendor_feedback.jsp"><i class="fas fa-comments"></i>Vendor Feedback</a></li>
-						
-						<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="/GeoVendor/admin/all_user.jsp"><i class="fas fa-user"></i>View User's</a></li>
-						
-						<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="/GeoVendor/admin/all_vendor.jsp"><i class="fas fa-eye"></i>View Vendor's</a></li>
-					
-					<!-- <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Link2</a>
-                </li> -->
-					<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="/GeoVendor/Adminlogout"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
-					<!-- <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <b>Dropdown</b>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-dark">
-                    <li><a class="dropdown-item" href="#">Link1</a></li>
-                    <li><a class="dropdown-item" href="#">Link2</a></li>
-                    <li><a class="dropdown-item" href="#">Link3</a></li>
-                    <li><a class="dropdown-item" href="#">Link4</a></li>
-                    
-                    <li>
-                      <hr class="dropdown-divider">
-                    </li>
-                    
-                  </ul>
-                </li> -->
+			<div class="offcanvas-body" style="padding: 1.5rem;">
+				<ul class="navbar-nav justify-content-end flex-grow-1">
+					<li class="nav-item mb-2">
+						<a class="nav-link admin-nav-link" href="/GeoVendor/admin/admin_home.jsp">
+							<i class="fas fa-home me-3"></i>Dashboard
+						</a>
+					</li>
+					<li class="nav-item mb-2">
+						<a class="nav-link admin-nav-link" href="/GeoVendor/admin/all_contacts.jsp">
+							<i class="fas fa-address-book me-3"></i>View Contacts
+						</a>
+					</li>
+					<li class="nav-item mb-2">
+						<a class="nav-link admin-nav-link" href="/GeoVendor/admin/all_feedback.jsp">
+							<i class="fas fa-comments me-3"></i>User Feedback
+						</a>
+					</li>
+					<li class="nav-item mb-2">
+						<a class="nav-link admin-nav-link" href="/GeoVendor/admin/vendor_feedback.jsp">
+							<i class="fas fa-comment-dots me-3"></i>Vendor Feedback
+						</a>
+					</li>
+					<li class="nav-item mb-2">
+						<a class="nav-link admin-nav-link" href="/GeoVendor/admin/all_user.jsp">
+							<i class="fas fa-users me-3"></i>Manage Users
+						</a>
+					</li>
+					<li class="nav-item mb-4">
+						<a class="nav-link admin-nav-link" href="/GeoVendor/admin/all_vendor.jsp">
+							<i class="fas fa-store me-3"></i>Manage Vendors
+						</a>
+					</li>
+					<li class="nav-item mt-auto">
+						<a class="nav-link admin-nav-link logout-link" href="/GeoVendor/Adminlogout"
+							style="color: #ef4444 !important;">
+							<i class="fas fa-sign-out-alt me-3"></i>Logout
+						</a>
+					</li>
 				</ul>
-				<!--  <form class="d-flex mt-3" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-success" type="submit">Search</button>
-              </form> -->
 			</div>
 		</div>
 	</div>
 </nav>
+
 <style>
-    .nav-item:hover {
-        background-color: rgba(0, 0, 0, 0.3); 
+	.admin-nav-link {
+		padding: 12px 16px !important;
+		border-radius: 12px;
+		transition: all 0.25s ease;
+		color: #cbd5e1 !important;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+	}
 
-        transition: background-color 0.3s ease; 
-    }
+	.admin-nav-link:hover {
+		background: rgba(37, 99, 235, 0.1);
+		color: #ffffff !important;
+		transform: translateX(5px);
+	}
+
+	.admin-nav-link i {
+		width: 20px;
+		text-align: center;
+		font-size: 1.1rem;
+	}
+
+	.logout-link:hover {
+		background: rgba(239, 68, 68, 0.1) !important;
+	}
+
+	.navbar-toggler:focus {
+		box-shadow: none;
+	}
 </style>
-

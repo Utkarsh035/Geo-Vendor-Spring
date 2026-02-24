@@ -315,106 +315,138 @@
         </head>
 
         <body>
-            <% String userEmail=(String) session.getAttribute("sessionEmail"); UserDao userDao=new UserDao(); User
-                u=userDao.userProfile(userEmail); String uploadPath=request.getContextPath(); %>
 
-                <%@ include file="/user/user_header.html" %>
+<%
+    // ===== SESSION CHECK =====
+    String userEmail = (String) session.getAttribute("sessionEmail");
 
-                    <% String businessEmail=request.getParameter("email"); if (businessEmail==null ||
-                        businessEmail.isEmpty()) { businessEmail=(String) session.getAttribute("sessionEmail"); } if
-                        (businessEmail==null) { request.setAttribute("message", CustomMessages.AUTHORISE_ERROR);
-                        RequestDispatcher rd=request.getRequestDispatcher("/vendor/vendor_login.jsp");
-                        rd.forward(request, response); return; } VendorDao vendorDao=new VendorDao(); Business
-                        bs=vendorDao.businessProfile(businessEmail); %>
+    if (userEmail == null || session.isNew()) {
+        request.setAttribute("message", CustomMessages.AUTHORISE_ERROR);
+        RequestDispatcher rd = request.getRequestDispatcher("/user/user_login.jsp");
+        rd.forward(request, response);
+        return;
+    }
 
-                        <% if (bs !=null) { String businessImagePath=uploadPath + "/" + bs.getBusiness_photo(); %>
-                            <!-- Hero Banner -->
-                            <section class="biz-hero">
-                                <div class="biz-hero-content">
-                                    <div class="biz-img-wrapper">
-                                        <img src="<%= businessImagePath %>" class="biz-img" alt="Business Image">
-                                        <div class="img-ring"></div>
-                                    </div>
-                                    <h1 class="biz-name"><span>
-                                            <%= bs.getBusiness_name() %>
-                                        </span></h1>
-                                    <p class="biz-category">
-                                        <%= bs.getCategory() !=null ? bs.getCategory() : "Local Business" %>
-                                    </p>
-                                </div>
-                            </section>
+    // ===== USER DATA =====
+    UserDao userDao = new UserDao();
+    User u = userDao.userProfile(userEmail);
 
-                            <!-- Info Cards -->
-                            <div class="info-section">
-                                <div class="info-grid">
-                                    <div class="info-card">
-                                        <div class="info-card-icon icon-blue">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                        </div>
-                                        <div class="info-card-label">Address</div>
-                                        <div class="info-card-value">
-                                            <%= bs.getAddress() %>
-                                        </div>
-                                    </div>
-                                    <div class="info-card">
-                                        <div class="info-card-icon icon-green">
-                                            <i class="fas fa-envelope"></i>
-                                        </div>
-                                        <div class="info-card-label">Email</div>
-                                        <div class="info-card-value">
-                                            <%= bs.getEmail() %>
-                                        </div>
-                                    </div>
-                                    <div class="info-card">
-                                        <div class="info-card-icon icon-amber">
-                                            <i class="fas fa-phone-alt"></i>
-                                        </div>
-                                        <div class="info-card-label">Phone No</div>
-                                        <div class="info-card-value">
-                                            <%= bs.getPhone() %>
-                                        </div>
-                                    </div>
-                                    <div class="info-card">
-                                        <div class="info-card-icon icon-slate">
-                                            <i class="fas fa-receipt"></i>
-                                        </div>
-                                        <div class="info-card-label">GST No</div>
-                                        <div class="info-card-value">
-                                            <%= bs.getGst_no() %>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+    String uploadPath = request.getContextPath();
 
-                            <!-- Description Section -->
-                            <div class="desc-section">
-                                <div class="desc-card">
-                                    <h3 class="desc-title"><i class="fas fa-info-circle"></i> About Business</h3>
-                                    <p class="desc-content">
-                                        <%= bs.getDescription() !=null && !bs.getDescription().isEmpty() ?
-                                            bs.getDescription() : "No description available for this business yet." %>
-                                    </p>
-                                </div>
-                            </div>
+    String imagePath = uploadPath + "/" +
+        (u != null && u.getProfile_pic() != null
+            ? u.getProfile_pic()
+            : "images/default.png");
 
-                            <% } else { %>
-                                <div style="text-align:center; margin-top:120px; padding: 40px;">
-                                    <div class="biz-img-wrapper" style="opacity: 0.5;">
-                                        <i class="fas fa-store-slash" style="font-size: 80px; color: #94a3b8;"></i>
-                                    </div>
-                                    <h3 style="color: #64748b; font-family: 'Inter', sans-serif; font-weight: 600;">
-                                        Business profile not found.
-                                    </h3>
-                                    <a href="/GeoVendor/user/user_home.jsp" class="btn btn-primary mt-3"
-                                        style="border-radius: 50px; padding: 10px 25px;">Back to Dashboard</a>
-                                </div>
-                                <% } %>
+%>
 
-                                    <%@ include file="/WEB-INF/common/footer.html" %>
+<!-- ===== HEADER INCLUDE ===== -->
+<%@ include file="/user/user_header.html" %>
 
-                                        <script
-                                            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                                            crossorigin="anonymous"></script>
-        </body>
+<%
+    // ===== BUSINESS FETCH =====
+    String businessEmail = request.getParameter("email");
 
+    if (businessEmail == null || businessEmail.isEmpty()) {
+        businessEmail = userEmail;
+    }
+
+    VendorDao vendorDao = new VendorDao();
+    Business bs = vendorDao.businessProfile(businessEmail);
+%>
+
+<% if (bs != null) { 
+    String businessImagePath = uploadPath + "/" +
+        (bs.getBusiness_photo() != null
+            ? bs.getBusiness_photo()
+            : "images/default_business.png");
+%>
+
+<!-- ===== Hero Banner ===== -->
+<section class="biz-hero">
+    <div class="biz-hero-content">
+        <div class="biz-img-wrapper">
+            <img src="<%= businessImagePath %>" class="biz-img" alt="Business Image">
+            <div class="img-ring"></div>
+        </div>
+
+        <h1 class="biz-name">
+            <span><%= bs.getBusiness_name() %></span>
+        </h1>
+
+        <p class="biz-category">
+            <%= bs.getBusiness_category() != null
+                ? bs.getBusiness_category()
+                : "Local Business" %>
+        </p>
+    </div>
+</section>
+
+<!-- ===== Info Cards ===== -->
+<div class="info-section">
+    <div class="info-grid">
+
+        <div class="info-card">
+            <div class="info-card-icon icon-blue">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="info-card-label">Address</div>
+            <div class="info-card-value"><%= bs.getAddress() %></div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-icon icon-green">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="info-card-label">Email</div>
+            <div class="info-card-value"><%= bs.getEmail() %></div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-icon icon-amber">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <div class="info-card-label">Phone</div>
+            <div class="info-card-value"><%= bs.getPhone() %></div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-icon icon-slate">
+                <i class="fas fa-receipt"></i>
+            </div>
+            <div class="info-card-label">GST No</div>
+            <div class="info-card-value"><%= bs.getGst_no() %></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== Description ===== -->
+<div class="desc-section">
+    <div class="desc-card">
+        <h3 class="desc-title">About Business</h3>
+        <p class="desc-content">
+            <%= bs.getDescription() != null && !bs.getDescription().isEmpty()
+                ? bs.getDescription()
+                : "No description available for this business yet." %>
+        </p>
+    </div>
+</div>
+
+<% } else { %>
+
+<!-- ===== Business Not Found ===== -->
+<div style="text-align:center; margin-top:120px;">
+    <h3>Business profile not found.</h3>
+    <a href="/GeoVendor/user/user_home.jsp" class="btn btn-primary">
+        Back to Dashboard
+    </a>
+</div>
+
+<% } %>
+
+<!-- ===== FOOTER ===== -->
+<%@ include file="/WEB-INF/common/footer.html" %>
+
+</body>
         </html>

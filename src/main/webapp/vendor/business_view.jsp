@@ -381,9 +381,12 @@
                                 <h1 class="biz-name"><span>
                                         <%= bs.getBusiness_name() %>
                                     </span></h1>
-                                <p class="biz-category">
-                                    <%= bs.getCategory() !=null ? bs.getCategory() : "Local Business" %>
-                                </p>
+                             <p class="biz-category">
+<%= (bs.getBusiness_category() != null 
+     && !bs.getBusiness_category().trim().isEmpty()) 
+        ? bs.getBusiness_category() 
+        : "Local Business" %>
+</p>
                             </div>
                         </section>
 
@@ -443,7 +446,7 @@
                         <!-- Vendor Actions -->
                         <div class="actions-section">
                             <div class="actions-grid">
-                                <a href="/GeoVendor/vendor/ business_edit.jsp" class="action-btn">
+                                <a href="/GeoVendor/vendor/business_edit.jsp" class="action-btn">
                                     <i class="fas fa-edit"></i> Edit Business Details
                                 </a>
                                 <a href="/GeoVendor/vendor/update_location.jsp" class="action-btn">

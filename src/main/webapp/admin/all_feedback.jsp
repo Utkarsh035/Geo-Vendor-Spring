@@ -1,131 +1,191 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <%@page import="gv.dao.*,gv.beans.*,java.util.*" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Feedbacks List(user)</title>
-<%@include file="/common_html/all_css.html"%>
-<style>
-.flex-container{
-display: flex;
-flex-wrap: wrap;
-width: 80%;
-margin-left:10%;
-justify-content:space-around;
-gap:10px
-}
-.box {
-    background-color: white;
-    border: 1px solid #83afd4;
-    box-shadow: 0 4px 15px rgba(131, 175, 212, 0.3);
-    border-radius: 12px;
-    padding: 20px;
-    width: 350px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+        <!DOCTYPE html>
+        <html>
 
-.box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(131, 175, 212, 0.4);
-}
-.box h5 {
-    font-size: 15px;
-    margin-bottom: 10px;
-    color: #555;
-}
+        <head>
+            <meta charset="UTF-8">
+            <title>Feedbacks List(user)</title>
+            <%@include file="/common_html/all_css.html" %>
+                <style>
+                    body {
+                        background-color: #f8fafc;
+                        font-family: 'Inter', sans-serif;
+                    }
 
-.box h4 {
-    font-size: 16px;
-    margin-top: 15px;
-    color: #222;
-}
+                    .page-hero {
+                        background: radial-gradient(circle at top right, #f1f5f9 0%, #cbd5e1 100%);
+                        position: relative;
+                        padding: 120px 0 60px;
+                        text-align: center;
+                        overflow: hidden;
+                    }
 
-.fa-star {
-    color: #83afd4;
-    margin: 0 2px;
-}
-.img-contanier {
-position:relative;
-	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2)),
-		url("/GeoVendor/images/bg_map.png");
-	background-repeat: no-repeat;
-	background-size: cover;
-	 height: 100vh;  
-	   overflow-y: auto; 
-}
-.main-body, .container-fluid {
-    margin: 0;
-    padding: 0;
-}
-.img-contanier h2 {
-    margin-top: 0;
-}
-.pin-img {
-	position: absolute;
-	bottom: 10px;
-	right: 10px;
-}
+                    .page-hero::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: url("/GeoVendor/images/bg_map.png") no-repeat center center/cover;
+                        opacity: 0.1;
+                        pointer-events: none;
+                    }
 
-</style>
-</head>
-<body>
-<%@include file="/admin/admin_header.html" %>
-<div class="main-body">
-<div class="container-fluid  img-contanier ">
-<div class="container mt-3 text-center">
-<h2 style="margin-top: 65px"> User's Feedback List</h2>
-<img alt="pin-img" src="/GeoVendor/images/pin.gif" height="40"
-				width="50" class="pin-img">
-</div>
+                    .hero-content {
+                        position: relative;
+                        z-index: 2;
+                    }
 
-<%
-AdminDao dao=new AdminDao();
-ArrayList<Feedback>feedbacklist=dao.viewAllFeedback();
-if(feedbacklist.size()>0){
-%>
-<div class="flex-container">
-<%for(Feedback fb:feedbacklist) {
+                    .hero-title {
+                        font-size: 2.5rem;
+                        font-weight: 800;
+                        color: #0f172a;
+                        letter-spacing: -1px;
+                    }
 
-String rt=fb.getRating();
-String[]rate=rt.split(",");
+                    .hero-title span {
+                        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                    }
 
-%>
+                    .feedback-container {
+                        max-width: 1200px;
+                        margin: -40px auto 80px;
+                        padding: 0 20px;
+                        position: relative;
+                        z-index: 3;
+                    }
+
+                    .feedback-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                        gap: 25px;
+                    }
+
+                    .feedback-card {
+                        background: white;
+                        border-radius: 20px;
+                        padding: 30px;
+                        box-shadow: 0 4px 15px -3px rgba(148, 163, 184, 0.1);
+                        border: 1px solid #f1f5f9;
+                        transition: all 0.3s ease;
+                        display: flex;
+                        flex-direction: column;
+                    }
+
+                    .feedback-card:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 15px 30px -10px rgba(148, 163, 184, 0.2);
+                    }
+
+                    .author-info {
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                        margin-bottom: 20px;
+                    }
+
+                    .author-avatar {
+                        width: 48px;
+                        height: 48px;
+                        background: var(--bg-grey-gradient);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: var(--primary);
+                        font-weight: 700;
+                        font-size: 1.2rem;
+                    }
+
+                    .author-name {
+                        font-weight: 700;
+                        color: #1e293b;
+                        font-size: 1.05rem;
+                    }
+
+                    .rating-stars {
+                        color: #f59e0b;
+                        /* Amber for stars */
+                        margin-bottom: 12px;
+                        font-size: 0.9rem;
+                    }
+
+                    .feedback-text {
+                        color: #475569;
+                        font-size: 0.95rem;
+                        line-height: 1.6;
+                        flex-grow: 1;
+                        font-style: italic;
+                    }
+
+                    .pin-img {
+                        position: absolute;
+                        bottom: 20px;
+                        right: 20px;
+                        opacity: 0.5;
+                    }
+                </style>
+        </head>
+
+        <body>
+            <%@include file="/admin/admin_header.html" %>
+
+                <!-- Hero Section -->
+                <section class="page-hero">
+                    <div class="hero-content">
+                        <h1 class="hero-title">User <span>Feedback</span></h1>
+                    </div>
+                    <img alt="pin-img" src="/GeoVendor/images/pin.gif" height="40" width="50" class="pin-img">
+                </section>
+
+                <div class="feedback-container">
+                    <% AdminDao dao=new AdminDao(); ArrayList<Feedback>feedbacklist=dao.viewAllFeedback();
+                        if(feedbacklist.size()>0){
+                        %>
+                        <div class="feedback-grid">
+                            <%for(Feedback fb:feedbacklist) { String rt=fb.getRating(); String[]rate=rt.split(","); %>
+                                <div class="feedback-card">
+                                    <div class="author-info">
+                                        <div class="author-avatar">
+                                            <%=fb.getName().substring(0, 1).toUpperCase() %>
+                                        </div>
+                                        <div class="author-name">
+                                            <%=fb.getName() %>
+                                        </div>
+                                    </div>
+
+                                    <div class="rating-stars">
+                                        <%for(String r :rate) { %>
+                                            <i class="fas fa-star"></i>
+                                            <%} %>
+                                    </div>
+
+                                    <div class="feedback-text">
+                                        "<%=fb.getRemark() %>"
+                                    </div>
+                                </div>
+                                <%} %>
+                        </div>
+                        <%} else{ %>
+                            <div class="text-center p-5 bg-white rounded-4 shadow-sm border border-light-subtle">
+                                <i class="fas fa-comment-slash mb-3" style="font-size: 3rem; color: #cbd5e1;"></i>
+                                <h3 style="color: #64748b;">No Feedback Received Yet</h3>
+                            </div>
+                            <%} %>
+                </div>
 
 
-<div class="box">
-<h5>Remarks:<%=fb.getRemark() %></h5>
-<h5>Rating:
-<%for( String  r :rate)
-{
-%>
-<i class="fas fa-star"></i>
-
-<%} %>
-</h5>
-<h4>Given By :<%=fb.getName() %></h4>
-</div>
-<%} %>
-</div>
-<%} 
-else{
-%>
-
-<h2>No Feedback</h2>
- <%} %>
- <img alt="pin-img" src="/GeoVendor/images/pin.gif" height="40"
-				width="50" class="pin-img">
- </div>
-</div>
 
 
+                <%@ include file="/WEB-INF/common/footer.html" %>
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+                        crossorigin="anonymous"></script>
+        </body>
 
-<%@ include file="/WEB-INF/common/footer.html"%>
-<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-		crossorigin="anonymous"></script>
-</body>
-</html>
+        </html>
