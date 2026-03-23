@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoVendor — Location-based Vendor Discovery</title>
+    <meta name="description" content="Discover local vendors and businesses near you with GeoVendor.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo" onclick="navigate('home')">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Geo<strong>Vendor</strong></span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="#" onclick="navigate('home')" class="nav-link active" data-page="home">Home</a>
+                <a href="#" onclick="navigate('contact')" class="nav-link" data-page="contact">Contact</a>
+                <a href="#" onclick="navigate('user-login')" class="nav-link" data-page="user-login" id="navUserLogin">User Login</a>
+                <a href="#" onclick="navigate('vendor-login')" class="nav-link" data-page="vendor-login" id="navVendorLogin">Vendor Login</a>
+                <a href="#" onclick="navigate('admin-login')" class="nav-link" data-page="admin-login" id="navAdminLogin">Admin</a>
+                <!-- Logged-in links (hidden by default) -->
+                <a href="#" onclick="navigate('user-dashboard')" class="nav-link logged-in-link user-link" data-page="user-dashboard" style="display:none">Dashboard</a>
+                <a href="#" onclick="navigate('vendor-dashboard')" class="nav-link logged-in-link vendor-link" data-page="vendor-dashboard" style="display:none">Dashboard</a>
+                <a href="#" onclick="navigate('admin-dashboard')" class="nav-link logged-in-link admin-link" data-page="admin-dashboard" style="display:none">Dashboard</a>
+                <a href="#" onclick="handleLogout()" class="nav-link logged-in-link" id="navLogout" style="display:none"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" onclick="toggleNav()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ===== HOME PAGE ===== -->
+        <section class="page active" id="page-home">
+            <div class="hero">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1>Discover Local <span class="gradient-text">Vendors</span> Near You</h1>
+                    <p>Find trusted businesses, shops, restaurants, and services around your location with GeoVendor.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary btn-lg" onclick="navigate('user-login')"><i class="fas fa-user"></i> Get Started</button>
+                        <button class="btn btn-outline btn-lg" onclick="navigate('vendor-login')"><i class="fas fa-store"></i> Register Business</button>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <h2 class="section-title">What Our Users Say</h2>
+                <div class="feedback-grid" id="homeFeedbacks">
+                    <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                </div>
+            </div>
+            <div class="section features-section">
+                <h2 class="section-title">Why GeoVendor?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+                        <h3>Location Based</h3>
+                        <p>Find vendors pinpointed on the map right near your location.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-star"></i></div>
+                        <h3>Trusted Reviews</h3>
+                        <p>Read real feedback from verified users and vendors.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-tags"></i></div>
+                        <h3>Multiple Categories</h3>
+                        <p>Shops, hospitals, hotels, restaurants, schools, and more.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CONTACT PAGE ===== -->
+        <section class="page" id="page-contact">
+            <div class="section">
+                <h2 class="section-title">Contact Us</h2>
+                <div class="form-card">
+                    <form id="contactForm" onsubmit="submitContact(event)">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Name</label>
+                            <input type="text" id="contactName" required placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="contactEmail" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Phone</label>
+                            <input type="text" id="contactPhone" required placeholder="Your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-comment"></i> Query</label>
+                            <textarea id="contactQuery" rows="4" required placeholder="How can we help?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+                    </form>
+                    <div id="contactMessage" class="form-message"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== USER LOGIN ===== -->
+        <section class="page" id="page-user-login">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <div class="auth-icon"><i class="fas fa-user-circle"></i></div>
+                        <h2>User Login</h2>
+                    </div>
+                    <form id="userLoginForm" onsubmit="loginUser(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="userLoginEmail" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="userLoginPassword" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    </form>
+                    <div id="userLoginMessage" class="form-message"></div>
+                    <p class="auth-footer">Don't have an account? <a href="#" onclick="navigate('user-register')">Register here</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== USER REGISTER ===== -->
+        <section class="page" id="page-user-register">
+            <div class="auth-container">
+                <div class="auth-card auth-card-wide">
+                    <div class="auth-header">
+                        <div class="auth-icon"><i class="fas fa-user-plus"></i></div>
+                        <h2>User Registration</h2>
+                    </div>
+                    <form id="userRegisterForm" onsubmit="registerUser(event)">
+                        <div class="form-row">
+                            <div class="form-group"><label>Name</label><input type="text" id="regUserName" required></div>
+                            <div class="form-group"><label>Phone</label><input type="text" id="regUserPhone" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Email</label><input type="email" id="regUserEmail" required></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="regUserPassword" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>City</label><input type="text" id="regUserCity" required></div>
+                            <div class="form-group"><label>Address</label><input type="text" id="regUserAddress" required></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Picture</label>
+                            <input type="file" id="regUserPic" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Register</button>
+                    </form>
+                    <div id="userRegisterMessage" class="form-message"></div>
+                    <p class="auth-footer">Already have an account? <a href="#" onclick="navigate('user-login')">Login here</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== VENDOR LOGIN ===== -->
+        <section class="page" id="page-vendor-login">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <div class="auth-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-store"></i></div>
+                        <h2>Vendor Login</h2>
+                    </div>
+                    <form id="vendorLoginForm" onsubmit="loginVendor(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="vendorLoginEmail" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="vendorLoginPassword" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" style="background:linear-gradient(135deg,#f093fb,#f5576c)">Login</button>
+                    </form>
+                    <div id="vendorLoginMessage" class="form-message"></div>
+                    <p class="auth-footer">Don't have an account? <a href="#" onclick="navigate('vendor-register')">Register here</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== VENDOR REGISTER ===== -->
+        <section class="page" id="page-vendor-register">
+            <div class="auth-container">
+                <div class="auth-card auth-card-wide">
+                    <div class="auth-header">
+                        <div class="auth-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-store"></i></div>
+                        <h2>Vendor Registration</h2>
+                    </div>
+                    <form id="vendorRegisterForm" onsubmit="registerVendor(event)">
+                        <div class="form-row">
+                            <div class="form-group"><label>Name</label><input type="text" id="regVendorName" required></div>
+                            <div class="form-group"><label>Phone</label><input type="text" id="regVendorPhone" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Email</label><input type="email" id="regVendorEmail" required></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="regVendorPassword" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>City</label><input type="text" id="regVendorCity" required></div>
+                            <div class="form-group"><label>Address</label><input type="text" id="regVendorAddress" required></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Picture</label>
+                            <input type="file" id="regVendorPic" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" style="background:linear-gradient(135deg,#f093fb,#f5576c)">Register</button>
+                    </form>
+                    <div id="vendorRegisterMessage" class="form-message"></div>
+                    <p class="auth-footer">Already have an account? <a href="#" onclick="navigate('vendor-login')">Login here</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ADMIN LOGIN ===== -->
+        <section class="page" id="page-admin-login">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <div class="auth-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-shield-alt"></i></div>
+                        <h2>Admin Login</h2>
+                    </div>
+                    <form id="adminLoginForm" onsubmit="loginAdmin(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="adminLoginEmail" required placeholder="admin@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="adminLoginPassword" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" style="background:linear-gradient(135deg,#667eea,#764ba2)">Login</button>
+                    </form>
+                    <div id="adminLoginMessage" class="form-message"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== USER DASHBOARD ===== -->
+        <section class="page" id="page-user-dashboard">
+            <div class="dashboard">
+                <div class="dash-sidebar">
+                    <div class="dash-profile" id="userProfileCard">
+                        <div class="dash-avatar"><i class="fas fa-user"></i></div>
+                        <h3 id="userDashName">User</h3>
+                        <p id="userDashEmail">user@email.com</p>
+                    </div>
+                    <nav class="dash-nav">
+                        <a href="#" class="dash-link active" onclick="showDashTab('userProfile')"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('userEdit')"><i class="fas fa-edit"></i> Edit Profile</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('userMap')"><i class="fas fa-map"></i> View Map</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('userFeedback')"><i class="fas fa-star"></i> Feedback</a>
+                    </nav>
+                </div>
+                <div class="dash-main">
+                    <!-- User Profile Tab -->
+                    <div class="dash-tab active" id="tab-userProfile">
+                        <h2><i class="fas fa-user"></i> My Profile</h2>
+                        <div class="profile-details" id="userProfileDetails">
+                            <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                        </div>
+                    </div>
+                    <!-- User Edit Tab -->
+                    <div class="dash-tab" id="tab-userEdit">
+                        <h2><i class="fas fa-edit"></i> Edit Profile</h2>
+                        <div class="form-card">
+                            <form id="userEditForm" onsubmit="updateUserProfile(event)">
+                                <div class="form-row">
+                                    <div class="form-group"><label>Name</label><input type="text" id="editUserName" required></div>
+                                    <div class="form-group"><label>Phone</label><input type="text" id="editUserPhone" required></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>City</label><input type="text" id="editUserCity" required></div>
+                                    <div class="form-group"><label>Address</label><input type="text" id="editUserAddress" required></div>
+                                </div>
+                                <div class="form-group"><label>Profile Picture</label><input type="file" id="editUserPic" accept="image/*"></div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                            <div id="userEditMessage" class="form-message"></div>
+                        </div>
+                    </div>
+                    <!-- User Map Tab -->
+                    <div class="dash-tab" id="tab-userMap">
+                        <h2><i class="fas fa-map"></i> Nearby Businesses</h2>
+                        <div class="business-grid" id="businessGrid">
+                            <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                        </div>
+                    </div>
+                    <!-- User Feedback Tab -->
+                    <div class="dash-tab" id="tab-userFeedback">
+                        <h2><i class="fas fa-star"></i> Submit Feedback</h2>
+                        <div class="form-card">
+                            <form id="userFeedbackForm" onsubmit="submitUserFeedback(event)">
+                                <div class="form-row">
+                                    <div class="form-group"><label>Name</label><input type="text" id="fbUserName" required></div>
+                                    <div class="form-group"><label>Email</label><input type="email" id="fbUserEmail" required></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Rating</label>
+                                    <div class="star-rating" id="userStarRating">
+                                        <i class="fas fa-star" data-value="1" onclick="setRating('user',1)"></i>
+                                        <i class="fas fa-star" data-value="2" onclick="setRating('user',2)"></i>
+                                        <i class="fas fa-star" data-value="3" onclick="setRating('user',3)"></i>
+                                        <i class="fas fa-star" data-value="4" onclick="setRating('user',4)"></i>
+                                        <i class="fas fa-star" data-value="5" onclick="setRating('user',5)"></i>
+                                    </div>
+                                    <input type="hidden" id="fbUserRating" value="">
+                                </div>
+                                <div class="form-group"><label>Remark</label><textarea id="fbUserRemark" rows="3" placeholder="Share your experience..."></textarea></div>
+                                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                            </form>
+                            <div id="userFeedbackMessage" class="form-message"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== VENDOR DASHBOARD ===== -->
+        <section class="page" id="page-vendor-dashboard">
+            <div class="dashboard">
+                <div class="dash-sidebar vendor-sidebar">
+                    <div class="dash-profile">
+                        <div class="dash-avatar" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-store"></i></div>
+                        <h3 id="vendorDashName">Vendor</h3>
+                        <p id="vendorDashEmail">vendor@email.com</p>
+                    </div>
+                    <nav class="dash-nav">
+                        <a href="#" class="dash-link active" onclick="showDashTab('vendorProfile')"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('vendorEdit')"><i class="fas fa-edit"></i> Edit Profile</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('vendorBusiness')"><i class="fas fa-briefcase"></i> Business</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('vendorLocation')"><i class="fas fa-map-pin"></i> Location</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('vendorFeedback')"><i class="fas fa-star"></i> Feedback</a>
+                    </nav>
+                </div>
+                <div class="dash-main">
+                    <!-- Vendor Profile Tab -->
+                    <div class="dash-tab active" id="tab-vendorProfile">
+                        <h2><i class="fas fa-user"></i> My Profile</h2>
+                        <div class="profile-details" id="vendorProfileDetails">
+                            <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                        </div>
+                    </div>
+                    <!-- Vendor Edit Tab -->
+                    <div class="dash-tab" id="tab-vendorEdit">
+                        <h2><i class="fas fa-edit"></i> Edit Profile</h2>
+                        <div class="form-card">
+                            <form id="vendorEditForm" onsubmit="updateVendorProfile(event)">
+                                <div class="form-row">
+                                    <div class="form-group"><label>Name</label><input type="text" id="editVendorName" required></div>
+                                    <div class="form-group"><label>Phone</label><input type="text" id="editVendorPhone" required></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>City</label><input type="text" id="editVendorCity" required></div>
+                                    <div class="form-group"><label>Address</label><input type="text" id="editVendorAddress" required></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="background:linear-gradient(135deg,#f093fb,#f5576c)">Save Changes</button>
+                            </form>
+                            <div id="vendorEditMessage" class="form-message"></div>
+                        </div>
+                    </div>
+                    <!-- Vendor Business Tab -->
+                    <div class="dash-tab" id="tab-vendorBusiness">
+                        <h2><i class="fas fa-briefcase"></i> My Business</h2>
+                        <div id="vendorBusinessContent">
+                            <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                        </div>
+                    </div>
+                    <!-- Vendor Location Tab -->
+                    <div class="dash-tab" id="tab-vendorLocation">
+                        <h2><i class="fas fa-map-pin"></i> Update Location</h2>
+                        <div class="form-card">
+                            <form id="vendorLocationForm" onsubmit="updateVendorLocation(event)">
+                                <div class="form-row">
+                                    <div class="form-group"><label>Latitude</label><input type="text" id="vendorLat" required placeholder="e.g. 26.8467"></div>
+                                    <div class="form-group"><label>Longitude</label><input type="text" id="vendorLng" required placeholder="e.g. 80.9462"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="background:linear-gradient(135deg,#f093fb,#f5576c)">Update Location</button>
+                            </form>
+                            <div id="vendorLocationMessage" class="form-message"></div>
+                        </div>
+                    </div>
+                    <!-- Vendor Feedback Tab -->
+                    <div class="dash-tab" id="tab-vendorFeedback">
+                        <h2><i class="fas fa-star"></i> Submit Feedback</h2>
+                        <div class="form-card">
+                            <form id="vendorFeedbackForm" onsubmit="submitVendorFeedback(event)">
+                                <div class="form-row">
+                                    <div class="form-group"><label>Name</label><input type="text" id="fbVendorName" required></div>
+                                    <div class="form-group"><label>Email</label><input type="email" id="fbVendorEmail" required></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Rating</label>
+                                    <div class="star-rating" id="vendorStarRating">
+                                        <i class="fas fa-star" data-value="1" onclick="setRating('vendor',1)"></i>
+                                        <i class="fas fa-star" data-value="2" onclick="setRating('vendor',2)"></i>
+                                        <i class="fas fa-star" data-value="3" onclick="setRating('vendor',3)"></i>
+                                        <i class="fas fa-star" data-value="4" onclick="setRating('vendor',4)"></i>
+                                        <i class="fas fa-star" data-value="5" onclick="setRating('vendor',5)"></i>
+                                    </div>
+                                    <input type="hidden" id="fbVendorRating" value="">
+                                </div>
+                                <div class="form-group"><label>Remark</label><textarea id="fbVendorRemark" rows="3" placeholder="Share your experience..."></textarea></div>
+                                <button type="submit" class="btn btn-primary" style="background:linear-gradient(135deg,#f093fb,#f5576c)">Submit Feedback</button>
+                            </form>
+                            <div id="vendorFeedbackMessage" class="form-message"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ADMIN DASHBOARD ===== -->
+        <section class="page" id="page-admin-dashboard">
+            <div class="dashboard">
+                <div class="dash-sidebar admin-sidebar">
+                    <div class="dash-profile">
+                        <div class="dash-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-shield-alt"></i></div>
+                        <h3>Admin Panel</h3>
+                        <p id="adminDashEmail">admin@gmail.com</p>
+                    </div>
+                    <nav class="dash-nav">
+                        <a href="#" class="dash-link active" onclick="showDashTab('adminUsers')"><i class="fas fa-users"></i> Users</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('adminVendors')"><i class="fas fa-store"></i> Vendors</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('adminContacts')"><i class="fas fa-envelope"></i> Contacts</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('adminFeedback')"><i class="fas fa-star"></i> Feedback</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('adminVendorFeedback')"><i class="fas fa-comments"></i> Vendor FB</a>
+                        <a href="#" class="dash-link" onclick="showDashTab('adminStats')"><i class="fas fa-chart-pie"></i> Statistics</a>
+                    </nav>
+                </div>
+                <div class="dash-main">
+                    <div class="dash-tab active" id="tab-adminUsers">
+                        <h2><i class="fas fa-users"></i> All Users</h2>
+                        <div class="table-container" id="adminUsersTable"><div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
+                    </div>
+                    <div class="dash-tab" id="tab-adminVendors">
+                        <h2><i class="fas fa-store"></i> All Vendors</h2>
+                        <div class="table-container" id="adminVendorsTable"><div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
+                    </div>
+                    <div class="dash-tab" id="tab-adminContacts">
+                        <h2><i class="fas fa-envelope"></i> Contact Queries</h2>
+                        <div class="table-container" id="adminContactsTable"><div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
+                    </div>
+                    <div class="dash-tab" id="tab-adminFeedback">
+                        <h2><i class="fas fa-star"></i> User Feedback</h2>
+                        <div class="table-container" id="adminFeedbackTable"><div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
+                    </div>
+                    <div class="dash-tab" id="tab-adminVendorFeedback">
+                        <h2><i class="fas fa-comments"></i> Vendor Feedback</h2>
+                        <div class="table-container" id="adminVendorFeedbackTable"><div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
+                    </div>
+                    <div class="dash-tab" id="tab-adminStats">
+                        <h2><i class="fas fa-chart-pie"></i> Statistics</h2>
+                        <div class="stats-grid" id="adminStatsContent">
+                            <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== TOAST NOTIFICATION ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer" id="mainFooter">
+        <div class="footer-content">
+            <p>&copy; 2026 GeoVendor. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
