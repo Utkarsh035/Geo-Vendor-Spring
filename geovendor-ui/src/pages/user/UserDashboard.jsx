@@ -12,6 +12,18 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// Haversine formula: distance in km between two lat/lng points
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const toRad = (v) => (v * Math.PI) / 180;
+  const R = 6371; // Earth radius in km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 export default function UserDashboard() {
   const { currentUser } = useAuth();
   const { showToast } = useToast();
@@ -22,6 +34,9 @@ export default function UserDashboard() {
   const [editForm, setEditForm] = useState({ name: '', phone: '', city: '', address: '' });
   const [fbRating, setFbRating] = useState('');
   const [message, setMessage] = useState({ id: '', text: '', type: '' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationStatus, setLocationStatus] = useState('detecting'); // 'detecting' | 'found' | 'denied'
 
   useEffect(() => {
     if (!currentUser || currentUser.role !== 'user') { navigate('/user-login'); return; }
@@ -46,10 +61,74 @@ export default function UserDashboard() {
     if (res.success) setBusinesses(res.data || []);
   };
 
+  const requestLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationStatus('denied');
+      return;
+    }
+    setLocationStatus('detecting');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocationStatus('found');
+      },
+      () => {
+        setLocationStatus('denied');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   const switchTab = (tab) => {
     setActiveTab(tab);
-    if (tab === 'map') loadBusinesses();
+    if (tab === 'map') {
+      loadBusinesses();
+      if (!userLocation) requestLocation();
+    }
     if (tab === 'profile') loadProfile();
+  };
+
+  // Compute filtered + sorted businesses
+  const getDisplayedBusinesses = () => {
+    if (!businesses || locationStatus === 'detecting') return null;
+    let list = [...businesses];
+    const isSearching = searchQuery.trim().length > 0;
+
+    // Filter by search query
+    if (isSearching) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter((b) =>
+        (b.businessName || '').toLowerCase().includes(q) ||
+        (b.businessCategory || '').toLowerCase().includes(q) ||
+        (b.description || '').toLowerCase().includes(q) ||
+        (b.address || '').toLowerCase().includes(q)
+      );
+    }
+
+    // Compute distance and sort
+    if (userLocation) {
+      list = list.map((b) => {
+        const lat = parseFloat(b.locationLat);
+        const lng = parseFloat(b.locationLong);
+        const dist = (!isNaN(lat) && !isNaN(lng))
+          ? haversineDistance(userLocation.lat, userLocation.lng, lat, lng)
+          : null;
+        return { ...b, _distance: dist };
+      });
+      list.sort((a, b) => {
+        if (a._distance === null && b._distance === null) return 0;
+        if (a._distance === null) return 1;
+        if (b._distance === null) return -1;
+        return a._distance - b._distance;
+      });
+
+      // When NOT searching, only show businesses within 5km
+      if (!isSearching) {
+        list = list.filter((b) => b._distance !== null && b._distance <= 5);
+      }
+    }
+
+    return list;
   };
 
   const handleEditSubmit = async (e) => {
@@ -157,16 +236,57 @@ export default function UserDashboard() {
           )}
 
           {/* Map / Business Tab */}
-          {activeTab === 'map' && (
+          {activeTab === 'map' && (() => {
+            const displayed = getDisplayedBusinesses();
+            return (
             <div className="dash-tab active">
               <h2><i className="fas fa-map"></i> Nearby Businesses</h2>
+
+              {/* Search Bar */}
+              <div className="business-search-bar">
+                <div className="search-input-wrapper">
+                  <i className="fas fa-search search-icon"></i>
+                  <input
+                    type="text"
+                    placeholder="Search businesses by name, category, location..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                    id="businessSearchInput"
+                  />
+                  {searchQuery && (
+                    <button className="search-clear-btn" onClick={() => setSearchQuery('')} title="Clear search">
+                      <i className="fas fa-times"></i>
+                    </button>
+                  )}
+                </div>
+                <div className="location-status">
+                  {locationStatus === 'detecting' && (
+                    <span className="loc-detecting"><i className="fas fa-spinner fa-spin"></i> Detecting location...</span>
+                  )}
+                  {locationStatus === 'found' && (
+                    <span className="loc-found"><i className="fas fa-map-marker-alt"></i> Showing businesses within 5 km</span>
+                  )}
+                  {locationStatus === 'denied' && (
+                    <span className="loc-denied"><i className="fas fa-exclamation-triangle"></i> Location unavailable — showing all businesses</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Business Grid */}
               <div className="business-grid">
-                {businesses === null ? (
+                {displayed === null ? (
                   <div className="loading-spinner"><i className="fas fa-spinner fa-spin"></i> Loading...</div>
-                ) : businesses.length === 0 ? (
-                  <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No businesses registered yet.</p>
+                ) : displayed.length === 0 ? (
+                  <p style={{ textAlign: 'center', color: 'var(--text-secondary)', gridColumn: '1 / -1' }}>
+                    {searchQuery
+                      ? `No businesses found for "${searchQuery}"`
+                      : userLocation
+                        ? 'No businesses found within 5 km. Use search to find businesses further away.'
+                        : 'No businesses registered yet.'}
+                  </p>
                 ) : (
-                  businesses.map((b, idx) => (
+                  displayed.map((b, idx) => (
                     <div className="business-card" key={idx}>
                       <div className="bc-header">
                         <div className="bc-icon"><i className={b.businessIcon || 'fas fa-store'}></i></div>
@@ -175,18 +295,34 @@ export default function UserDashboard() {
                           <span className="bc-category">{escapeHtml(b.businessCategory || '')}</span>
                         </div>
                       </div>
+                      {b._distance != null && (
+                        <div className="bc-distance">
+                          <i className="fas fa-location-arrow"></i> {b._distance < 1 ? `${Math.round(b._distance * 1000)} m` : `${b._distance.toFixed(1)} km`} away
+                        </div>
+                      )}
                       <div className="bc-details">
                         {b.description && <div className="bc-row"><i className="fas fa-info-circle"></i><span>{escapeHtml(b.description)}</span></div>}
                         <div className="bc-row"><i className="fas fa-phone"></i><span>{escapeHtml(b.phone || '-')}</span></div>
                         <div className="bc-row"><i className="fas fa-map-marker-alt"></i><span>{escapeHtml(b.address || '-')}</span></div>
                         {b.gstNo && <div className="bc-row"><i className="fas fa-id-card"></i><span>GST: {escapeHtml(b.gstNo)}</span></div>}
                       </div>
+                      {b.locationLat && b.locationLong && (
+                        <a
+                          className="btn-get-route"
+                          href={`https://www.google.com/maps/dir/?api=1${userLocation ? `&origin=${userLocation.lat},${userLocation.lng}` : ''}&destination=${b.locationLat},${b.locationLong}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <i className="fas fa-directions"></i> Get Route
+                        </a>
+                      )}
                     </div>
                   ))
                 )}
               </div>
             </div>
-          )}
+            );
+          })()}
 
           {/* Feedback Tab */}
           {activeTab === 'feedback' && (

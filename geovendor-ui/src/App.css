@@ -576,6 +576,114 @@ a:hover { color: var(--primary-dark); }
 }
 .bc-row i { color: var(--primary); width: 18px; text-align: center; font-size: 0.85rem; }
 
+/* ---- Business Search Bar ---- */
+.business-search-bar {
+  margin-bottom: 24px;
+}
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 14px 44px 14px 44px;
+  border: 1.5px solid var(--border-grey);
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--text-main);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.search-input::placeholder {
+  color: var(--text-secondary);
+}
+.search-clear-btn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+.search-clear-btn:hover {
+  background: #f1f5f9;
+  color: var(--text-main);
+}
+.location-status {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.location-status i {
+  margin-right: 6px;
+}
+.loc-detecting {
+  color: var(--text-muted);
+}
+.loc-found {
+  color: #059669;
+}
+.loc-denied {
+  color: #d97706;
+}
+
+/* ---- Distance Badge ---- */
+.bc-distance {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(124, 58, 237, 0.08));
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.bc-distance i {
+  font-size: 0.7rem;
+}
+
+/* ---- Get Route Button ---- */
+.btn-get-route {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--primary), #1d4ed8);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+.btn-get-route:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+  color: #fff;
+}
+
 /* ---- Data Table ---- */
 .table-container {
   overflow-x: auto;

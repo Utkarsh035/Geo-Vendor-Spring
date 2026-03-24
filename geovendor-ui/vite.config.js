@@ -7,6 +7,8 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:8080',
       '/uploads': 'http://localhost:8080',
+      '/profileImages': 'http://localhost:8080',
+      '/vendorImages': 'http://localhost:8080',
     },
   },
 })

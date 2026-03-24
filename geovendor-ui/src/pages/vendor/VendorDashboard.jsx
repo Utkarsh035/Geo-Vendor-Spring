@@ -1,9 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import StarRating from '../../components/StarRating';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+function LocationPicker({ position, setPosition }) {
+  useMapEvents({
+    click(e) {
+      setPosition({ lat: e.latlng.lat, lng: e.latlng.lng });
+    },
+  });
+  return position ? <Marker position={position} /> : null;
+}
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -23,6 +46,28 @@ export default function VendorDashboard() {
   const [editForm, setEditForm] = useState({ name: '', phone: '', city: '', address: '' });
   const [fbRating, setFbRating] = useState('');
   const [message, setMessage] = useState({ id: '', text: '', type: '' });
+  const [locationMode, setLocationMode] = useState('manual');
+  const [isLiveTracking, setIsLiveTracking] = useState(false);
+  const [lastLiveUpdate, setLastLiveUpdate] = useState(null);
+  const [manualLoc, setManualLoc] = useState(null);
+  const liveIntervalRef = useRef(null);
+
+  useEffect(() => {
+    if (vendorData?.business?.locationLat && vendorData?.business?.locationLong) {
+      setManualLoc({
+        lat: parseFloat(vendorData.business.locationLat),
+        lng: parseFloat(vendorData.business.locationLong)
+      });
+    } else {
+      setManualLoc({lat: 26.8467, lng: 80.9462}); // Lucknow default
+    }
+  }, [vendorData]);
+
+  useEffect(() => {
+    return () => {
+      if (liveIntervalRef.current) clearInterval(liveIntervalRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!currentUser || currentUser.role !== 'vendor') { navigate('/vendor-login'); return; }
@@ -95,7 +140,11 @@ export default function VendorDashboard() {
 
   const handleLocationSubmit = async (e) => {
     e.preventDefault();
-    const data = { lat: e.target.lat.value, lng: e.target.lng.value };
+    if (!manualLoc) {
+      setMessage({ id: 'location', text: 'Please pick a location on the map first', type: 'error' });
+      return;
+    }
+    const data = { lat: manualLoc.lat.toFixed(6), lng: manualLoc.lng.toFixed(6) };
     const res = await api.updateLocation(currentUser.email, data);
     if (res.success) {
       showToast('Location updated!');
@@ -103,6 +152,43 @@ export default function VendorDashboard() {
     } else {
       setMessage({ id: 'location', text: res.message, type: 'error' });
     }
+  };
+
+  const updateLiveLocation = () => {
+    if (!navigator.geolocation) {
+      setMessage({ id: 'location', text: 'Geolocation is not supported by your browser', type: 'error' });
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const data = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        const res = await api.updateLocation(currentUser.email, data);
+        if (res.success) {
+          setLastLiveUpdate(new Date().toLocaleTimeString());
+        } else {
+          setMessage({ id: 'location', text: 'Auto-update failed: ' + res.message, type: 'error' });
+        }
+      },
+      (err) => {
+        setMessage({ id: 'location', text: 'Location access denied or failed.', type: 'error' });
+        stopLiveTracking();
+      },
+      { enableHighAccuracy: true }
+    );
+  };
+
+  const startLiveTracking = () => {
+    setIsLiveTracking(true);
+    setMessage({ id: 'location', text: 'Live tracking started', type: 'success' });
+    updateLiveLocation(); // Update immediately
+    liveIntervalRef.current = setInterval(updateLiveLocation, 30000); // And every 30s
+  };
+
+  const stopLiveTracking = () => {
+    if (liveIntervalRef.current) clearInterval(liveIntervalRef.current);
+    liveIntervalRef.current = null;
+    setIsLiveTracking(false);
+    setMessage({ id: 'location', text: 'Live tracking stopped', type: 'success' });
   };
 
   const handleFeedbackSubmit = async (e) => {
@@ -278,14 +364,73 @@ export default function VendorDashboard() {
             <div className="dash-tab active">
               <h2><i className="fas fa-map-pin"></i> Update Location</h2>
               <div className="form-card">
-                <form onSubmit={handleLocationSubmit}>
-                  <div className="form-row">
-                    <div className="form-group"><label>Latitude</label><input type="text" name="lat" required placeholder="e.g. 26.8467" /></div>
-                    <div className="form-group"><label>Longitude</label><input type="text" name="lng" required placeholder="e.g. 80.9462" /></div>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
+                  <button type="button" className={`btn ${locationMode === 'manual' ? 'btn-primary' : 'btn-outline'}`} 
+                    style={locationMode === 'manual' ? { background: vendorGradient } : { color: 'var(--text-main)', borderColor: 'var(--border-grey)' }}
+                    onClick={() => { setLocationMode('manual'); setMessage({id:'',text:'',type:''}); }}><i className="fas fa-edit"></i> Manual Update</button>
+                  <button type="button" className={`btn ${locationMode === 'live' ? 'btn-primary' : 'btn-outline'}`} 
+                    style={locationMode === 'live' ? { background: vendorGradient } : { color: 'var(--text-main)', borderColor: 'var(--border-grey)' }}
+                    onClick={() => { setLocationMode('live'); setMessage({id:'',text:'',type:''}); }}><i className="fas fa-satellite-dish"></i> Live Tracking</button>
+                </div>
+
+                {locationMode === 'manual' ? (
+                  <form onSubmit={handleLocationSubmit}>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: 16 }}>Click the map to pin your business location, or drag the map to find it.</p>
+                    <div style={{ height: '350px', width: '100%', marginBottom: '20px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-grey)' }}>
+                      {manualLoc && (
+                        <MapContainer center={[manualLoc.lat, manualLoc.lng]} zoom={13} style={{ height: '100%', width: '100%' }}>
+                          <TileLayer
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                          />
+                          <LocationPicker position={manualLoc} setPosition={setManualLoc} />
+                        </MapContainer>
+                      )}
+                    </div>
+                    <div className="form-row" style={{ marginBottom: '16px' }}>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label>Selected Latitude</label>
+                        <input type="text" readOnly value={manualLoc?.lat?.toFixed(5) || ''} style={{ background: '#f8fafc', color: 'var(--text-muted)' }} />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label>Selected Longitude</label>
+                        <input type="text" readOnly value={manualLoc?.lng?.toFixed(5) || ''} style={{ background: '#f8fafc', color: 'var(--text-muted)' }} />
+                      </div>
+                    </div>
+                    <button type="submit" className="btn btn-primary" style={{ background: vendorGradient }}>Save Pinned Location</button>
+                  </form>
+                ) : (
+                  <div>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: 20 }}>Automatically update your location every 30 seconds while this dashboard is open.</p>
+                    
+                    {isLiveTracking ? (
+                      <div style={{ padding: '20px', background: 'rgba(5, 150, 105, 0.08)', border: '1px solid #059669', borderRadius: '12px', marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#059669', fontWeight: 'bold', marginBottom: '8px' }}>
+                          <i className="fas fa-circle-notch fa-spin"></i> Live Tracking Active
+                        </div>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                          Last broadcast: <strong>{lastLiveUpdate || 'Locating...'}</strong>
+                        </p>
+                      </div>
+                    ) : (
+                      <div style={{ padding: '20px', background: 'var(--bg-light)', border: '1px solid var(--border-grey)', borderRadius: '12px', marginBottom: '24px' }}>
+                        <i className="fas fa-info-circle" style={{ color: 'var(--text-muted)', marginRight: '8px' }}></i>
+                        <span style={{ color: 'var(--text-muted)' }}>Tracking is currently stopped.</span>
+                      </div>
+                    )}
+                    
+                    {isLiveTracking ? (
+                      <button type="button" className="btn btn-primary" style={{ background: '#ef4444', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)' }} onClick={stopLiveTracking}>
+                        <i className="fas fa-stop-circle"></i> Stop Tracking
+                      </button>
+                    ) : (
+                      <button type="button" className="btn btn-primary" style={{ background: vendorGradient }} onClick={startLiveTracking}>
+                        <i className="fas fa-play-circle"></i> Start Live Tracking
+                      </button>
+                    )}
                   </div>
-                  <button type="submit" className="btn btn-primary" style={{ background: vendorGradient }}>Update Location</button>
-                </form>
-                {message.id === 'location' && message.text && <div className={`form-message ${message.type}`}>{message.text}</div>}
+                )}
+                {message.id === 'location' && message.text && <div className={`form-message ${message.type}`} style={{ marginTop: '20px' }}>{message.text}</div>}
               </div>
             </div>
           )}
