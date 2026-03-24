@@ -137,6 +137,18 @@ public class VendorRestController {
         return ResponseEntity.ok(ApiResponse.success("Location updated successfully", null));
     }
 
+    @PutMapping("/{email}/status")
+    public ResponseEntity<ApiResponse<Void>> updateStatus(
+            @PathVariable String email,
+            @RequestBody UpdateStatusRequest request) {
+
+        int status = vendorService.updateBusinessStatus(email, request.getIsActive());
+        if (status == 0) {
+            throw new ResourceNotFoundException("Business", "vendor email", email);
+        }
+        return ResponseEntity.ok(ApiResponse.success("Status updated successfully", null));
+    }
+
     // ---- Feedback ----
 
     @PostMapping("/feedback")

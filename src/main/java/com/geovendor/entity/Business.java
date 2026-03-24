@@ -40,6 +40,9 @@ public class Business {
     @Column(name = "business_icon")
     private String businessIcon;
 
+    @Column(name = "isactive")
+    private Boolean isActive = true;
+
     public Business() {}
 
     public Business(String email, String businessCategory, String businessName,
@@ -102,4 +105,6 @@ public class Business {
     public String getBusinessIcon() { return businessIcon; }
     public void setBusinessIcon(String businessIcon) { this.businessIcon = businessIcon; }
 
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 }

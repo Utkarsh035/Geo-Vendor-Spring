@@ -287,12 +287,13 @@ export default function UserDashboard() {
                   </p>
                 ) : (
                   displayed.map((b, idx) => (
-                    <div className="business-card" key={idx}>
+                    <div className={`business-card${b.isActive === false ? ' closed' : ''}`} key={idx}>
                       <div className="bc-header">
                         <div className="bc-icon"><i className={b.businessIcon || 'fas fa-store'}></i></div>
                         <div>
                           <div className="bc-name">{escapeHtml(b.businessName || '')}</div>
-                          <span className="bc-category">{escapeHtml(b.businessCategory || '')}</span>
+                          <span className="bc-category" style={{ marginRight: '8px' }}>{escapeHtml(b.businessCategory || '')}</span>
+                          {b.isActive === false && <span className="bc-closed-badge">Currently Closed</span>}
                         </div>
                       </div>
                       {b._distance != null && (

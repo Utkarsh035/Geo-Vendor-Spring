@@ -864,3 +864,21 @@ a:hover { color: var(--primary-dark); }
   .btn-lg { width: 100%; justify-content: center; }
   .stats-grid { grid-template-columns: 1fr; }
 }
+
+/* ---- Business Open/Close Status ---- */
+.business-card.closed {
+  opacity: 0.75;
+  filter: grayscale(0.5);
+}
+
+.bc-closed-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #fee2e2;
+  color: #ef4444;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 4px;
+}

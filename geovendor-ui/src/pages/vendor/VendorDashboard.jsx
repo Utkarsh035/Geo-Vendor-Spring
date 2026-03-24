@@ -138,6 +138,18 @@ export default function VendorDashboard() {
     }
   };
 
+  const handleToggleStatus = async () => {
+    const isCurrentlyActive = b?.isActive !== false; // defaults to true
+    if (!b) return;
+    const res = await api.updateBusinessStatus(currentUser.email, !isCurrentlyActive);
+    if (res.success) {
+      showToast(isCurrentlyActive ? 'Business marked as closed' : 'Business opened');
+      loadProfile();
+    } else {
+      showToast(res.message, 'error');
+    }
+  };
+
   const handleLocationSubmit = async (e) => {
     e.preventDefault();
     if (!manualLoc) {
@@ -292,14 +304,24 @@ export default function VendorDashboard() {
               {b ? (
                 <>
                   <div className="business-card" style={{ border: 'none', padding: 0 }}>
-                    <div className="bc-header">
-                      <div className="bc-icon"><i className={b.businessIcon || 'fas fa-store'}></i></div>
-                      <div>
-                        <div className="bc-name">{escapeHtml(b.businessName || '')}</div>
-                        <span className="bc-category">{escapeHtml(b.businessCategory || '')}</span>
+                    <div className="bc-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', gap: '14px' }}>
+                        <div className="bc-icon" style={{ filter: b.isActive === false ? 'grayscale(1)' : 'none' }}>
+                          <i className={b.businessIcon || 'fas fa-store'}></i>
+                        </div>
+                        <div>
+                          <div className="bc-name">{escapeHtml(b.businessName || '')}</div>
+                          <span className="bc-category" style={{ marginRight: '8px' }}>{escapeHtml(b.businessCategory || '')}</span>
+                          {b.isActive === false && <span style={{ background: '#fee2e2', color: '#ef4444', padding: '2px 8px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 'bold' }}>CLOSED</span>}
+                        </div>
                       </div>
+                      <button onClick={handleToggleStatus} className={`btn ${b.isActive === false ? 'btn-primary' : 'btn-outline'}`} 
+                              style={b.isActive === false ? { background: '#10b981', color: 'white' } : { color: '#ef4444', borderColor: '#ef4444' }}>
+                        <i className={b.isActive === false ? "fas fa-door-open" : "fas fa-door-closed"}></i> 
+                        {b.isActive === false ? ' Open Business' : ' Close Business'}
+                      </button>
                     </div>
-                    <div className="bc-details">
+                    <div className="bc-details" style={{ opacity: b.isActive === false ? 0.6 : 1 }}>
                       {b.description && <div className="bc-row"><i className="fas fa-info-circle"></i><span>{escapeHtml(b.description)}</span></div>}
                       <div className="bc-row"><i className="fas fa-phone"></i><span>{escapeHtml(b.phone || '-')}</span></div>
                       <div className="bc-row"><i className="fas fa-map-marker-alt"></i><span>{escapeHtml(b.address || '-')}</span></div>
@@ -308,7 +330,7 @@ export default function VendorDashboard() {
                     </div>
                   </div>
                   <h3 style={{ marginTop: 24, marginBottom: 12 }}>Edit Business</h3>
-                  <div className="form-card" style={{ maxWidth: '100%' }}>
+                  <div className="form-card" style={{ maxWidth: '100%', opacity: b.isActive === false ? 0.6 : 1, pointerEvents: b.isActive === false ? 'none' : 'auto' }}>
                     <form onSubmit={handleEditBusiness}>
                       <div className="form-row">
                         <div className="form-group"><label>Business Name</label><input type="text" name="editBizName" defaultValue={b.businessName || ''} required /></div>
@@ -364,7 +386,15 @@ export default function VendorDashboard() {
             <div className="dash-tab active">
               <h2><i className="fas fa-map-pin"></i> Update Location</h2>
               <div className="form-card">
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
+                {b?.isActive === false ? (
+                  <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                    <div style={{ fontSize: '3rem', color: '#ef4444', marginBottom: '16px' }}><i className="fas fa-door-closed"></i></div>
+                    <h3 style={{ marginBottom: '12px' }}>Business is Closed</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>You cannot update your location while your business is closed. Please open your business from the Business tab to resume location updates.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
                   <button type="button" className={`btn ${locationMode === 'manual' ? 'btn-primary' : 'btn-outline'}`} 
                     style={locationMode === 'manual' ? { background: vendorGradient } : { color: 'var(--text-main)', borderColor: 'var(--border-grey)' }}
                     onClick={() => { setLocationMode('manual'); setMessage({id:'',text:'',type:''}); }}><i className="fas fa-edit"></i> Manual Update</button>
@@ -431,6 +461,8 @@ export default function VendorDashboard() {
                   </div>
                 )}
                 {message.id === 'location' && message.text && <div className={`form-message ${message.type}`} style={{ marginTop: '20px' }}>{message.text}</div>}
+                  </>
+                )}
               </div>
             </div>
           )}

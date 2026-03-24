@@ -71,6 +71,7 @@ const api = {
   addBusiness: (email, formData) => postMultipart(`/vendors/${encodeURIComponent(email)}/business`, formData),
   editBusiness: (email, data) => put(`/vendors/${encodeURIComponent(email)}/business`, data),
   updateLocation: (email, data) => put(`/vendors/${encodeURIComponent(email)}/location`, data),
+  updateBusinessStatus: (email, isActive) => put(`/vendors/${encodeURIComponent(email)}/status`, { isActive }),
   submitVendorFeedback: (data) => post('/vendors/feedback', data),
 
   // Admin

@@ -115,6 +115,15 @@ public class VendorService {
     }
 
     @Transactional
+    public int updateBusinessStatus(String email, Boolean isActive) {
+        Business existing = businessRepository.findByEmail(email);
+        if (existing == null) return 0;
+        existing.setIsActive(isActive);
+        businessRepository.save(existing);
+        return 1;
+    }
+
+    @Transactional
     public int addVendorFeedback(VendorFeedback vf) {
         try {
             String existingEmail = vendorFeedbackRepository.findEmailByEmail(vf.getEmaill());
