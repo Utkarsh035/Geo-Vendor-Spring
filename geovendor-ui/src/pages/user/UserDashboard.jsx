@@ -276,7 +276,23 @@ export default function UserDashboard() {
               {/* Business Grid */}
               <div className="business-grid">
                 {displayed === null ? (
-                  <div className="loading-spinner"><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+                  Array.from({ length: 6 }).map((_, idx) => (
+                    <div className="business-card skeleton-card" key={`skel-${idx}`}>
+                      <div className="bc-header">
+                        <div className="skeleton-icon"></div>
+                        <div style={{ flex: 1 }}>
+                          <div className="skeleton-text skeleton-title"></div>
+                          <div className="skeleton-text skeleton-subtitle"></div>
+                        </div>
+                      </div>
+                      <div className="bc-details" style={{ marginTop: '16px' }}>
+                        <div className="skeleton-text skeleton-line"></div>
+                        <div className="skeleton-text skeleton-line" style={{ width: '75%' }}></div>
+                        <div className="skeleton-text skeleton-line" style={{ width: '40%' }}></div>
+                      </div>
+                      <div className="skeleton-button"></div>
+                    </div>
+                  ))
                 ) : displayed.length === 0 ? (
                   <p style={{ textAlign: 'center', color: 'var(--text-secondary)', gridColumn: '1 / -1' }}>
                     {searchQuery

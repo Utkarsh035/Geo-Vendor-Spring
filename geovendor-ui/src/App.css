@@ -882,3 +882,36 @@ a:hover { color: var(--primary-dark); }
   text-transform: uppercase;
   margin-top: 4px;
 }
+
+/* ---- Skeleton Loader Shimmer ---- */
+.skeleton-card {
+  border: 1px solid var(--border-grey);
+  background: #fff;
+}
+.skeleton-card .skeleton-icon,
+.skeleton-card .skeleton-text,
+.skeleton-card .skeleton-button {
+  background: #e2e8f0;
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-card .skeleton-icon::before,
+.skeleton-card .skeleton-text::before,
+.skeleton-card .skeleton-button::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 1.5s infinite;
+}
+.skeleton-icon { width: 48px; height: 48px; border-radius: 12px; }
+.skeleton-text { border-radius: 4px; margin-bottom: 8px; }
+.skeleton-title { height: 18px; width: 70%; margin-bottom: 6px; background: #cbd5e1 !important; }
+.skeleton-subtitle { height: 12px; width: 40%; }
+.skeleton-line { height: 14px; width: 90%; margin-bottom: 10px; }
+.skeleton-button { height: 36px; width: 120px; border-radius: 50px; margin-top: 12px; }
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
