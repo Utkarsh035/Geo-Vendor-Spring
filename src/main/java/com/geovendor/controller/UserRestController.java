@@ -121,6 +121,15 @@ public class UserRestController {
         return ResponseEntity.ok(ApiResponse.success(businessList));
     }
 
+    @GetMapping("/businesses/{email}")
+    public ResponseEntity<ApiResponse<Business>> getBusiness(@PathVariable String email) {
+        Business b = userService.getBusinessByEmail(email);
+        if (b == null) {
+            throw new ResourceNotFoundException("Business", "email", email);
+        }
+        return ResponseEntity.ok(ApiResponse.success(b));
+    }
+
     // ---- File Upload Helper ----
 
     private String saveFile(MultipartFile file, String folderName) throws IOException {

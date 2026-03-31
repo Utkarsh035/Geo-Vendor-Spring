@@ -1,0 +1,72 @@
+.live-map-wrapper {
+  height: 450px;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: 1px solid var(--border-grey);
+  margin-top: 20px;
+  position: relative;
+}
+
+/* Custom Vendor Marker Styling */
+.custom-vendor-marker {
+  transition: transform 1s linear; /* Smooth movement between coordinates */
+  background: none !important;
+  border: none !important;
+}
+
+.vendor-marker-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vendor-icon-bg {
+  background: var(--accent);
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50% 50% 50% 0; /* Teardrop shape */
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 2;
+  border: 2px solid white;
+}
+
+.vendor-icon-bg i {
+  transform: rotate(45deg);
+  font-size: 16px;
+}
+
+/* Pulsing Ripple Effect */
+.vendor-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: marker-pulse 2s infinite ease-out;
+  z-index: 1;
+}
+
+@keyframes marker-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}

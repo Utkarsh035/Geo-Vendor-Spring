@@ -4,6 +4,7 @@ import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import StarRating from '../../components/StarRating';
+import LiveTrackingMap from '../../components/LiveTrackingMap';
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -37,10 +38,16 @@ export default function UserDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [userLocation, setUserLocation] = useState(null);
   const [locationStatus, setLocationStatus] = useState('detecting'); // 'detecting' | 'found' | 'denied'
+  const [trackingBusiness, setTrackingBusiness] = useState(null);
+  const [isTrackingMode, setIsTrackingMode] = useState(false);
+  const [trackingInterval, setTrackingInterval] = useState(null);
 
   useEffect(() => {
     if (!currentUser || currentUser.role !== 'user') { navigate('/user-login'); return; }
     loadProfile();
+    return () => {
+      if (trackingInterval) clearInterval(trackingInterval);
+    };
   }, [currentUser]);
 
   const loadProfile = async () => {
@@ -77,6 +84,40 @@ export default function UserDashboard() {
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
+  };
+  const startLiveTracking = (business) => {
+    setTrackingBusiness(business);
+    setIsTrackingMode(true);
+    switchTab('map');
+    
+    // Immediate first update
+    updateTrackingLocation(business.email);
+
+    // Only start interval if business is active
+    if (business.isActive !== false) {
+      const interval = setInterval(() => {
+        updateTrackingLocation(business.email);
+      }, 8000);
+      setTrackingInterval(interval);
+    }
+  };
+
+  const stopLiveTracking = () => {
+    if (trackingInterval) clearInterval(trackingInterval);
+    setTrackingInterval(null);
+    setIsTrackingMode(false);
+    setTrackingBusiness(null);
+  };
+
+  const updateTrackingLocation = async (email) => {
+    const res = await api.getBusinessDetails(email);
+    if (res.success) {
+      setTrackingBusiness(res.data);
+      if (!res.data.isActive) {
+        showToast('Vendor has gone offline.', 'warning');
+        stopLiveTracking();
+      }
+    }
   };
 
   const switchTab = (tab) => {
@@ -324,19 +365,77 @@ export default function UserDashboard() {
                         {b.gstNo && <div className="bc-row"><i className="fas fa-id-card"></i><span>GST: {escapeHtml(b.gstNo)}</span></div>}
                       </div>
                       {b.locationLat && b.locationLong && (
-                        <a
-                          className="btn-get-route"
-                          href={`https://www.google.com/maps/dir/?api=1${userLocation ? `&origin=${userLocation.lat},${userLocation.lng}` : ''}&destination=${b.locationLat},${b.locationLong}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button 
+                          className="btn-get-route" 
+                          style={{ width: '100%', background: 'var(--accent)', color: 'white', border: 'none' }}
+                          onClick={() => startLiveTracking(b)}
                         >
                           <i className="fas fa-directions"></i> Get Route
-                        </a>
+                        </button>
                       )}
                     </div>
                   ))
                 )}
               </div>
+
+              {/* Live Tracking Map Modal/Overlay */}
+              {isTrackingMode && trackingBusiness && (
+                <div className="live-tracking-overlay">
+                  <div className="tracking-map-container">
+                    <div className="tracking-header">
+                      <div className="th-left">
+                        <div className="th-icon"><i className={trackingBusiness.businessIcon || 'fas fa-store'}></i></div>
+                        <div>
+                          <h3>{trackingBusiness.businessName}</h3>
+                          {trackingBusiness.isActive !== false ? (
+                            <p><i className="fas fa-circle" style={{ color: '#10b981', fontSize: '0.7rem' }}></i> Live Location Updating (8s)</p>
+                          ) : (
+                            <p><i className="fas fa-clock" style={{ color: '#f59e0b', fontSize: '0.7rem' }}></i> Business Closed - Showing Last Known Location</p>
+                          )}
+                        </div>
+                      </div>
+                      <button className="close-tracking-btn" onClick={stopLiveTracking}>
+                        <i className="fas fa-times"></i>
+                      </button>
+                    </div>
+                    
+                    <div className="tracking-body">
+                      <LiveTrackingMap 
+                        userLocation={userLocation} 
+                        vendorLocation={{ 
+                          lat: parseFloat(trackingBusiness.locationLat), 
+                          lng: parseFloat(trackingBusiness.locationLong) 
+                        }} 
+                        businessName={trackingBusiness.businessName}
+                        businessIcon={trackingBusiness.businessIcon}
+                      />
+                    </div>
+                    
+                    <div className="tracking-footer">
+                      <div className="tf-stat">
+                        <span className="tf-label">Status</span>
+                        <span className="tf-value" style={{ color: trackingBusiness.isActive !== false ? '#10b981' : '#f59e0b' }}>
+                          {trackingBusiness.isActive !== false ? 'On the move' : 'Service Closed'}
+                        </span>
+                      </div>
+                      <div className="tf-stat">
+                        <span className="tf-label">Navigation</span>
+                        <a 
+                          href={`https://www.google.com/maps/dir/?api=1${userLocation ? `&origin=${userLocation.lat},${userLocation.lng}` : ''}&destination=${trackingBusiness.locationLat},${trackingBusiness.locationLong}`}
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: '600' }}
+                        >
+                          Open in Google Maps
+                        </a>
+                      </div>
+                      <button className="btn btn-primary" onClick={() => window.open(`tel:${trackingBusiness.phone}`)}>
+                        <i className="fas fa-phone"></i> Call Vendor
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             );
           })()}

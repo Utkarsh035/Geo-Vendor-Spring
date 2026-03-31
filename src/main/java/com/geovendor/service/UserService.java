@@ -85,6 +85,10 @@ public class UserService {
         return businessRepository.findAll();
     }
 
+    public Business getBusinessByEmail(String email) {
+        return businessRepository.findByEmail(email);
+    }
+
     /**
      * Returns top 5-star feedbacks with user profile pics (for homepage).
      * Each User object has a transient Feedback attached via setFd().

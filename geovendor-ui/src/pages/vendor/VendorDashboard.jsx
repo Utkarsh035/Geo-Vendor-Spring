@@ -193,7 +193,7 @@ export default function VendorDashboard() {
     setIsLiveTracking(true);
     setMessage({ id: 'location', text: 'Live tracking started', type: 'success' });
     updateLiveLocation(); // Update immediately
-    liveIntervalRef.current = setInterval(updateLiveLocation, 30000); // And every 30s
+    liveIntervalRef.current = setInterval(updateLiveLocation, 8000); // And every 8s
   };
 
   const stopLiveTracking = () => {
@@ -431,7 +431,7 @@ export default function VendorDashboard() {
                   </form>
                 ) : (
                   <div>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: 20 }}>Automatically update your location every 30 seconds while this dashboard is open.</p>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: 20 }}>Automatically update your location every 8 seconds while this dashboard is open.</p>
                     
                     {isLiveTracking ? (
                       <div style={{ padding: '20px', background: 'rgba(5, 150, 105, 0.08)', border: '1px solid #059669', borderRadius: '12px', marginBottom: '24px' }}>

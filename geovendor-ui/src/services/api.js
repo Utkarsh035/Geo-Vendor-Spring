@@ -63,6 +63,7 @@ const api = {
   updateUserProfile: (email, formData) => putMultipart(`/users/${encodeURIComponent(email)}/profile`, formData),
   submitUserFeedback: (data) => post('/users/feedback', data),
   getAllBusinesses: () => get('/users/businesses'),
+  getBusinessDetails: (email) => get(`/users/businesses/${encodeURIComponent(email)}`),
 
   // Vendor
   registerVendor: (formData) => postMultipart('/vendors/register', formData),
