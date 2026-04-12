@@ -7,11 +7,11 @@ import Home from './pages/Home';
 import Contact from './pages/Contact';
 import UserLogin from './pages/auth/UserLogin';
 import UserRegister from './pages/auth/UserRegister';
-import VendorLogin from './pages/auth/VendorLogin';
-import VendorRegister from './pages/auth/VendorRegister';
+import PartnerLogin from './pages/auth/PartnerLogin';
+import PartnerRegister from './pages/auth/PartnerRegister';
 import AdminLogin from './pages/auth/AdminLogin';
 import UserDashboard from './pages/user/UserDashboard';
-import VendorDashboard from './pages/vendor/VendorDashboard';
+import PartnerDashboard from './pages/partner/PartnerDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import './App.css';
 
@@ -28,11 +28,11 @@ function AppLayout() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/user-login" element={<UserLogin />} />
           <Route path="/user-register" element={<UserRegister />} />
-          <Route path="/vendor-login" element={<VendorLogin />} />
-          <Route path="/vendor-register" element={<VendorRegister />} />
+          <Route path="/partner-login" element={<PartnerLogin />} />
+          <Route path="/partner-register" element={<PartnerRegister />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
-          <Route path="/vendor-dashboard" element={<VendorDashboard />} />
+          <Route path="/partner-dashboard" element={<PartnerDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Routes>
       </main>

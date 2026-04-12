@@ -109,4 +109,48 @@ public class UserService {
         }
         return userList;
     }
+
+    /**
+     * Toggles a business in the user's favorite list.
+     * Favorites are stored as a comma-separated string of business emails.
+     */
+    @Transactional
+    public boolean toggleFavorite(String userEmail, String businessEmail) {
+        User user = userRepository.findById(userEmail).orElse(null);
+        if (user == null) return false;
+
+        String favs = user.getFavorite();
+        List<String> favList = new ArrayList<>();
+        if (favs != null && !favs.trim().isEmpty()) {
+            favList = new ArrayList<>(List.of(favs.split(",")));
+        }
+
+        if (favList.contains(businessEmail)) {
+            favList.remove(businessEmail);
+        } else {
+            favList.add(businessEmail);
+        }
+
+        user.setFavorite(String.join(",", favList));
+        userRepository.save(user);
+        return true;
+    }
+
+    /**
+     * Fetches all favorite businesses for a specific user.
+     */
+    public List<Business> getFavoriteBusinesses(String userEmail) {
+        User user = userRepository.findById(userEmail).orElse(null);
+        if (user == null || user.getFavorite() == null || user.getFavorite().trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        String[] emails = user.getFavorite().split(",");
+        List<Business> favorites = new ArrayList<>();
+        for (String email : emails) {
+            Business b = businessRepository.findByEmail(email);
+            if (b != null) favorites.add(b);
+        }
+        return favorites;
+    }
 }

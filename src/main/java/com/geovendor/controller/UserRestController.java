@@ -130,6 +130,25 @@ public class UserRestController {
         return ResponseEntity.ok(ApiResponse.success(b));
     }
 
+    // ---- Favorites ----
+
+    @PostMapping("/{email:.+}/favorites/toggle/{businessEmail:.+}")
+    public ResponseEntity<ApiResponse<Void>> toggleFavorite(
+            @PathVariable String email,
+            @PathVariable String businessEmail) {
+        boolean success = userService.toggleFavorite(email, businessEmail);
+        if (success) {
+            return ResponseEntity.ok(ApiResponse.success("Favorites updated", null));
+        }
+        return ResponseEntity.badRequest().body(ApiResponse.error("Failed to update favorites"));
+    }
+
+    @GetMapping("/{email:.+}/favorites")
+    public ResponseEntity<ApiResponse<List<Business>>> getFavorites(@PathVariable String email) {
+        List<Business> favorites = userService.getFavoriteBusinesses(email);
+        return ResponseEntity.ok(ApiResponse.success(favorites));
+    }
+
     // ---- File Upload Helper ----
 
     private String saveFile(MultipartFile file, String folderName) throws IOException {

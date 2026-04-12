@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Edit3, Map, Star, Search, X, MapPin, Phone, Info, CreditCard, Navigation, Clock, Circle, ExternalLink, PhoneCall, LogOut, Compass } from 'lucide-react';
+import { User, Edit3, Map, Star, Search, X, MapPin, Phone, Info, CreditCard, Navigation, Clock, Circle, ExternalLink, PhoneCall, LogOut, Compass, Heart } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -35,6 +35,8 @@ export default function UserDashboard() {
   const [locationStatus, setLocationStatus] = useState('detecting');
   const [trackingBusiness, setTrackingBusiness] = useState(null);
   const [isTrackingMode, setIsTrackingMode] = useState(false);
+  const [favEmails, setFavEmails] = useState([]);
+  const [favBusinesses, setFavBusinesses] = useState(null);
   const trackingIntervalRef = useRef(null);
 
   useEffect(() => {
@@ -42,6 +44,7 @@ export default function UserDashboard() {
     loadProfile();
     requestLocation();
     loadBusinesses();
+    loadFavorites();
     return () => { if (trackingIntervalRef.current) clearInterval(trackingIntervalRef.current); };
   }, [currentUser]);
 
@@ -50,7 +53,15 @@ export default function UserDashboard() {
     if (res.success) {
       setProfile(res.data);
       setEditForm({ name: res.data.name || '', phone: res.data.phone || '', city: res.data.city || '', address: res.data.address || '' });
+      if (res.data.favorite) {
+        setFavEmails(res.data.favorite.split(',').filter(e => e.trim().length > 0));
+      }
     }
+  };
+
+  const loadFavorites = async () => {
+    const res = await api.getFavoriteBusinesses(currentUser.email);
+    if (res.success) setFavBusinesses(res.data || []);
   };
 
   const loadBusinesses = async () => { const res = await api.getAllBusinesses(); if (res.success) setBusinesses(res.data || []); };
@@ -131,10 +142,25 @@ export default function UserDashboard() {
     else { setMessage({ id: 'feedback', text: res.message, type: 'error' }); }
   };
 
+  const handleToggleFavorite = async (businessEmail) => {
+    const res = await api.toggleFavorite(currentUser.email, businessEmail);
+    if (res.success) {
+      const newFavs = favEmails.includes(businessEmail) 
+        ? favEmails.filter(e => e !== businessEmail)
+        : [...favEmails, businessEmail];
+      setFavEmails(newFavs);
+      loadFavorites();
+      showToast(favEmails.includes(businessEmail) ? 'Removed from favorites' : 'Added to favorites');
+    } else {
+      showToast('Action failed', 'error');
+    }
+  };
+
   if (!currentUser) return null;
 
   const tabs = [
     { key: 'map', icon: <MapPin size={18} />, label: 'Explore Businesses' },
+    { key: 'favorites', icon: <Heart size={18} />, label: 'My Favorites' },
     { key: 'profile', icon: <User size={18} />, label: 'My Profile' },
     { key: 'feedback', icon: <Star size={18} />, label: 'Submit Feedback' },
   ];
@@ -184,6 +210,12 @@ export default function UserDashboard() {
                       <div className={`biz-status ${b.isActive === false ? 'closed' : 'open'}`}>
                         {b.isActive === false ? 'Closed' : 'Open'}
                       </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleToggleFavorite(b.email); }}
+                        style={{ background: 'none', border: 'none', color: favEmails.includes(b.email) ? '#ef4444' : '#71717a', cursor: 'pointer', padding: 4, transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <Heart size={20} fill={favEmails.includes(b.email) ? '#ef4444' : 'none'} />
+                      </button>
                     </div>
                     
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f4f4f5', marginTop: 16, marginBottom: 4 }}>{escapeHtml(b.businessName)}</h3>
@@ -220,7 +252,74 @@ export default function UserDashboard() {
         </motion.div>
       );
     }
-    
+
+    if (activeTab === 'favorites') {
+      return (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+          <div className="saas-header-box" style={{ marginBottom: 24 }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#f4f4f5', margin: 0 }}>My Favorite Businesses</h2>
+            <p style={{ color: '#a1a1aa', marginTop: 4 }}>Access your most-loved partners quickly.</p>
+          </div>
+
+          <div className="saas-grid">
+            {favBusinesses === null ? (
+              Array.from({ length: 3 }).map((_, idx) => (
+                <div className="saas-card" key={`fav-skel-${idx}`} style={{ opacity: 0.5 }}>
+                  <div style={{ width: 48, height: 48, background: 'rgba(255,255,255,0.05)', borderRadius: 12, marginBottom: 16 }}></div>
+                  <div style={{ width: '60%', height: 18, background: 'rgba(255,255,255,0.05)', borderRadius: 4, marginBottom: 8 }}></div>
+                </div>
+              ))
+            ) : favBusinesses.length === 0 ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 0', color: '#71717a', background: 'rgba(255,255,255,0.02)', borderRadius: 24, border: '1px dashed rgba(255,255,255,0.1)' }}>
+                <Heart size={40} style={{ opacity: 0.3, marginBottom: 16 }} />
+                <p>You haven't added any favorites yet.</p>
+                <button 
+                  className="saas-btn-outline" 
+                  style={{ marginTop: 16 }}
+                  onClick={() => setActiveTab('map')}
+                >
+                  Explore Businesses
+                </button>
+              </div>
+            ) : (
+              favBusinesses.map((b, idx) => (
+                <div className="saas-card" key={`fav-${idx}`} style={{ opacity: b.isActive === false ? 0.6 : 1 }}>
+                  <div className="saas-card-glow"></div>
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #6366f1, #22d3ee)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem' }}>
+                        <i className={b.businessIcon || 'fas fa-store'}></i>
+                      </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleToggleFavorite(b.email); }}
+                        style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 4 }}
+                      >
+                        <Heart size={20} fill="#ef4444" />
+                      </button>
+                    </div>
+                    
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f4f4f5', marginTop: 16, marginBottom: 4 }}>{escapeHtml(b.businessName)}</h3>
+                    <div style={{ fontSize: '0.8rem', color: '#a1a1aa' }}>{escapeHtml(b.businessCategory)}</div>
+
+                    <div className="biz-meta" style={{ marginTop: 20 }}>
+                      <div className="biz-meta-item"><MapPin size={14} /> <span>{escapeHtml(b.address)}</span></div>
+                    </div>
+                    
+                    <button 
+                      style={{ width: '100%', padding: '10px', marginTop: 20, background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer' }}
+                      onClick={() => { setActiveTab('map'); startLiveTracking(b); }}
+                    >
+                      <Navigation size={16} /> Track Now
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </motion.div>
+      );
+    }
+
     if (activeTab === 'profile') {
       return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: 32 }}>

@@ -86,7 +86,7 @@ export default function Home() {
           </motion.div>
           
           <motion.h1 variants={fadeUp} className="hero-headline">
-            Find Trusted <span className="hero-gradient-word">Vendors</span><br />
+            Find Trusted <span className="hero-gradient-word">Partners</span><br />
             Around Your Location
           </motion.h1>
           
@@ -100,8 +100,8 @@ export default function Home() {
               <User size={18} /> Get Started Free
               <ChevronRight size={16} />
             </button>
-            <button className="hero-btn-secondary" onClick={() => navigate('/vendor-login')}>
-              <Store size={18} /> List Your Business
+            <button className="hero-btn-secondary" onClick={() => navigate('/partner-login')}>
+              <Store size={18} /> Partner Portal
             </button>
           </motion.div>
           
@@ -177,7 +177,7 @@ export default function Home() {
           >
             <span className="section-chip">How it Works</span>
             <h2 className="section-title">Get started in 3 simple steps</h2>
-            <p className="section-subtitle">From signup to discovering your nearest vendor in under a minute</p>
+            <p className="section-subtitle">From signup to discovering your nearest partner in under a minute</p>
           </motion.div>
           
           <div className="how-steps">
@@ -308,14 +308,14 @@ export default function Home() {
           transition={{ duration: 0.6 }}
         >
           <div className="cta-banner-glow"></div>
-          <h2>Ready to discover vendors near you?</h2>
+          <h2>Ready to discover partners near you?</h2>
           <p>Join thousands of users who find trusted businesses every day.</p>
           <div className="cta-banner-btns">
             <button className="hero-btn-primary" onClick={() => navigate('/user-register')}>
               Start Exploring <ArrowRight size={16} />
             </button>
-            <button className="hero-btn-secondary" onClick={() => navigate('/vendor-register')}>
-              Register as Vendor
+            <button className="hero-btn-secondary" onClick={() => navigate('/partner-register')}>
+              Become a Partner
             </button>
           </div>
         </motion.div>

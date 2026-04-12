@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/vendors")
+@RequestMapping("/api/partners")
 public class VendorRestController {
 
     @Autowired

@@ -6,7 +6,7 @@ import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import './Auth.css';
 
-export default function VendorRegister() {
+export default function PartnerRegister() {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [message, setMessage] = useState({ text: '', type: '' });
@@ -23,10 +23,10 @@ export default function VendorRegister() {
     fd.append('address', form.address.value);
     if (form.profilePic.files[0]) fd.append('profilePic', form.profilePic.files[0]);
 
-    const res = await api.registerVendor(fd);
+    const res = await api.registerPartner(fd);
     if (res.success) {
       showToast('Registration successful! Please login.');
-      navigate('/vendor-login');
+      navigate('/partner-login');
     } else {
       setMessage({ text: res.message, type: 'error' });
     }
@@ -53,7 +53,7 @@ export default function VendorRegister() {
           <motion.div className="auth-form-inner wide" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.15 }}>
             <div className="auth-form-header">
               <h2>Register your business</h2>
-              <p>Create your vendor account to get started</p>
+              <p>Create your partner account to get started</p>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="form-row">
@@ -72,7 +72,7 @@ export default function VendorRegister() {
               <button type="submit" className="btn btn-primary btn-block auth-submit-vendor">Register Business</button>
             </form>
             {message.text && <div className={`form-message ${message.type}`}>{message.text}</div>}
-            <p className="auth-form-footer">Already registered? <Link to="/vendor-login">Sign in</Link></p>
+            <p className="auth-form-footer">Already registered? <Link to="/partner-login">Sign in</Link></p>
           </motion.div>
         </div>
       </div>

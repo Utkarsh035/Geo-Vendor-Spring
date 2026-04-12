@@ -53,7 +53,7 @@ async function putMultipart(path, formData) {
 const api = {
   // Auth
   loginUser: (email, password) => post('/auth/user/login', { email, password }),
-  loginVendor: (email, password) => post('/auth/vendor/login', { email, password }),
+  loginPartner: (email, password) => post('/auth/partner/login', { email, password }),
   loginAdmin: (email, password) => post('/auth/admin/login', { email, password }),
 
   // User
@@ -64,24 +64,26 @@ const api = {
   submitUserFeedback: (data) => post('/users/feedback', data),
   getAllBusinesses: () => get('/users/businesses'),
   getBusinessDetails: (email) => get(`/users/businesses/${encodeURIComponent(email)}`),
+  toggleFavorite: (email, businessEmail) => post(`/users/${encodeURIComponent(email)}/favorites/toggle/${encodeURIComponent(businessEmail)}`, {}),
+  getFavoriteBusinesses: (email) => get(`/users/${encodeURIComponent(email)}/favorites`),
 
-  // Vendor
-  registerVendor: (formData) => postMultipart('/vendors/register', formData),
-  getVendorProfile: (email) => get(`/vendors/${encodeURIComponent(email)}/profile`),
-  updateVendorProfile: (email, data) => put(`/vendors/${encodeURIComponent(email)}/profile`, data),
-  addBusiness: (email, formData) => postMultipart(`/vendors/${encodeURIComponent(email)}/business`, formData),
-  editBusiness: (email, data) => put(`/vendors/${encodeURIComponent(email)}/business`, data),
-  updateLocation: (email, data) => put(`/vendors/${encodeURIComponent(email)}/location`, data),
-  updateBusinessStatus: (email, isActive) => put(`/vendors/${encodeURIComponent(email)}/status`, { isActive }),
-  submitVendorFeedback: (data) => post('/vendors/feedback', data),
+  // Partner
+  registerPartner: (formData) => postMultipart('/partners/register', formData),
+  getPartnerProfile: (email) => get(`/partners/${encodeURIComponent(email)}/profile`),
+  updatePartnerProfile: (email, data) => put(`/partners/${encodeURIComponent(email)}/profile`, data),
+  addBusiness: (email, formData) => postMultipart(`/partners/${encodeURIComponent(email)}/business`, formData),
+  editBusiness: (email, data) => put(`/partners/${encodeURIComponent(email)}/business`, data),
+  updateLocation: (email, data) => put(`/partners/${encodeURIComponent(email)}/location`, data),
+  updateBusinessStatus: (email, isActive) => put(`/partners/${encodeURIComponent(email)}/status`, { isActive }),
+  submitPartnerFeedback: (data) => post('/partners/feedback', data),
 
   // Admin
   getUsers: () => get('/admin/users'),
-  getVendors: () => get('/admin/vendors'),
+  getPartners: () => get('/admin/partners'),
   getContacts: () => get('/admin/contacts'),
   deleteContacts: (ids) => del('/admin/contacts', { ids }),
   getFeedback: () => get('/admin/feedback'),
-  getVendorFeedback: () => get('/admin/vendor-feedback'),
+  getPartnerFeedback: () => get('/admin/partner-feedback'),
   getRatingStats: () => get('/admin/stats/ratings'),
   getMonthlyContacts: () => get('/admin/stats/monthly-contacts'),
 

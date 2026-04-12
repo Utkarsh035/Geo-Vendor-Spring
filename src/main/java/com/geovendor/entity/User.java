@@ -32,15 +32,18 @@ public class User {
     private String profilePic;
 
     @Column(name = "date")
-    private Date date;
+    private java.sql.Date date;
 
     @Transient
     private Feedback feedback;
 
+    @Column(name = "favorite")
+    private String favorite;
+
     public User() {}
 
     public User(String email, String password, String name, String phone,
-                String city, String address, String profilePic, Date date) {
+                String city, String address, String profilePic, java.sql.Date date) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -74,9 +77,12 @@ public class User {
     public void setProfilePic(String profilePic) { this.profilePic = profilePic; }
 
 
-    public Date getDate() { return date; }
-    public void setDate(Date date) { this.date = date; }
+    public java.sql.Date getDate() { return date; }
+    public void setDate(java.sql.Date date) { this.date = date; }
 
     public Feedback getFd() { return feedback; }
     public void setFd(Feedback feedback) { this.feedback = feedback; }
+
+    public String getFavorite() { return favorite; }
+    public void setFavorite(String favorite) { this.favorite = favorite; }
 }

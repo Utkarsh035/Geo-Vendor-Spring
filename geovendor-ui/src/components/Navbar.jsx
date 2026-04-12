@@ -33,7 +33,7 @@ export default function Navbar() {
           {!currentUser && (
             <>
               <Link to="/user-login" className="nav-link" onClick={close}><User size={16} /> User Login</Link>
-              <Link to="/vendor-login" className="nav-link" onClick={close}><Store size={16} /> Vendor Login</Link>
+              <Link to="/partner-login" className="nav-link" onClick={close}><Store size={16} /> Partner Login</Link>
               <Link to="/admin-login" className="nav-link" onClick={close}><Shield size={16} /> Admin</Link>
             </>
           )}
@@ -42,7 +42,7 @@ export default function Navbar() {
             <Link to="/user-dashboard" className="nav-link" onClick={close}><LayoutDashboard size={16} /> Dashboard</Link>
           )}
           {currentUser?.role === 'vendor' && (
-            <Link to="/vendor-dashboard" className="nav-link" onClick={close}><LayoutDashboard size={16} /> Dashboard</Link>
+            <Link to="/partner-dashboard" className="nav-link" onClick={close}><LayoutDashboard size={16} /> Dashboard</Link>
           )}
           {currentUser?.role === 'admin' && (
             <Link to="/admin-dashboard" className="nav-link" onClick={close}><LayoutDashboard size={16} /> Dashboard</Link>

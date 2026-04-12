@@ -29,7 +29,7 @@ public class AdminRestController {
 
     // ---- Vendors ----
 
-    @GetMapping("/vendors")
+    @GetMapping("/partners")
     public ResponseEntity<ApiResponse<List<Vendor>>> getAllVendors() {
         List<Vendor> vendors = adminService.viewAllVendors();
         return ResponseEntity.ok(ApiResponse.success(vendors));
@@ -62,7 +62,7 @@ public class AdminRestController {
         return ResponseEntity.ok(ApiResponse.success(feedbacks));
     }
 
-    @GetMapping("/vendor-feedback")
+    @GetMapping("/partner-feedback")
     public ResponseEntity<ApiResponse<List<VendorFeedback>>> getAllVendorFeedback() {
         List<VendorFeedback> feedbacks = adminService.viewVendorFeedback();
         return ResponseEntity.ok(ApiResponse.success(feedbacks));

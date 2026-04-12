@@ -39,7 +39,7 @@ public class AuthRestController {
                 .body(ApiResponse.error("Invalid credentials"));
     }
 
-    @PostMapping("/vendor/login")
+    @PostMapping("/partner/login")
     public ResponseEntity<ApiResponse<Map<String, String>>> vendorLogin(@Valid @RequestBody LoginRequest request) {
         boolean status = vendorService.checkLogin(request.getEmail(), request.getPassword());
         if (status) {

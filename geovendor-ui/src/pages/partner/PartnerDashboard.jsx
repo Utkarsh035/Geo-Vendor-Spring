@@ -23,7 +23,7 @@ function LocationPicker({ position, setPosition }) {
 
 function escapeHtml(str) { if (!str) return ''; const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 
-export default function VendorDashboard() {
+export default function PartnerDashboard() {
   const { currentUser, logout } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -49,12 +49,12 @@ export default function VendorDashboard() {
   useEffect(() => { return () => { if (liveIntervalRef.current) clearInterval(liveIntervalRef.current); }; }, []);
 
   useEffect(() => {
-    if (!currentUser || currentUser.role !== 'vendor') { navigate('/vendor-login'); return; }
+    if (!currentUser || currentUser.role !== 'vendor') { navigate('/partner-login'); return; }
     loadProfile();
   }, [currentUser]);
 
   const loadProfile = async () => {
-    const res = await api.getVendorProfile(currentUser.email);
+    const res = await api.getPartnerProfile(currentUser.email);
     if (res.success) { 
       setVendorData(res.data); 
       const v = res.data.vendor; 
@@ -64,7 +64,7 @@ export default function VendorDashboard() {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    const res = await api.updateVendorProfile(currentUser.email, editForm);
+    const res = await api.updatePartnerProfile(currentUser.email, editForm);
     if (res.success) { showToast('Profile updated!'); setMessage({ id: 'edit', text: 'Profile updated successfully', type: 'success' }); loadProfile(); }
     else { setMessage({ id: 'edit', text: res.message, type: 'error' }); }
   };
@@ -127,7 +127,7 @@ export default function VendorDashboard() {
     const form = e.target;
     const data = { name: form.fbName.value, email: form.fbEmail.value, rating: fbRating, remark: form.fbRemark.value };
     if (!data.rating) { showToast('Please select a rating', 'error'); return; }
-    const res = await api.submitVendorFeedback(data);
+    const res = await api.submitPartnerFeedback(data);
     if (res.success) { showToast('Feedback submitted!'); setMessage({ id: 'feedback', text: res.message, type: 'success' }); form.reset(); setFbRating(''); }
     else { setMessage({ id: 'feedback', text: res.message, type: 'error' }); }
   };
@@ -139,7 +139,7 @@ export default function VendorDashboard() {
   const tabs = [
     { key: 'business', icon: <Briefcase size={18} />, label: 'Manage Business' },
     { key: 'location', icon: <MapPin size={18} />, label: 'GPS Location' },
-    { key: 'profile', icon: <User size={18} />, label: 'Vendor Profile' },
+    { key: 'profile', icon: <User size={18} />, label: 'Partner Profile' },
     { key: 'feedback', icon: <Star size={18} />, label: 'Submit Feedback' },
   ];
 
@@ -173,10 +173,10 @@ export default function VendorDashboard() {
                 </div>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 24, opacity: b.isActive === false ? 0.6 : 1 }}>
-                  <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><Info size={18} className="vendor-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>Description</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.description || '-')}</div></div></div>
-                  <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><Phone size={18} className="vendor-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>Phone</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.phone || '-')}</div></div></div>
-                  <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><CreditCard size={18} className="vendor-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>GST No</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.gstNo || '-')}</div></div></div>
-                  <div style={{ display: 'flex', gap: 12, color: '#a1a1aa', gridColumn: '1 / -1' }}><MapPin size={18} className="vendor-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>Registered Address</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.address || '-')}</div></div></div>
+                  <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><Info size={18} className="partner-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>Description</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.description || '-')}</div></div></div>
+                  <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><Phone size={18} className="partner-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>Phone</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.phone || '-')}</div></div></div>
+                  <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><CreditCard size={18} className="partner-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>GST No</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.gstNo || '-')}</div></div></div>
+                  <div style={{ display: 'flex', gap: 12, color: '#a1a1aa', gridColumn: '1 / -1' }}><MapPin size={18} className="partner-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>Registered Address</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.address || '-')}</div></div></div>
                 </div>
               </div>
 
@@ -371,7 +371,7 @@ export default function VendorDashboard() {
                 </div>
               </div>
               <div className="saas-form-group"><label>Comments / Suggestions</label><textarea name="fbRemark" rows="4" placeholder="Report bugs, suggest features, etc..." required></textarea></div>
-              <button type="submit" className="saas-btn-primary" style={{ background: 'linear-gradient(135deg, #ec4899, #f43f5e)', color: 'white', border: 'none' }}>Submit Vendor Review</button>
+              <button type="submit" className="saas-btn-primary" style={{ background: 'linear-gradient(135deg, #ec4899, #f43f5e)', color: 'white', border: 'none' }}>Submit Partner Review</button>
               {message.id === 'feedback' && <div style={{ marginTop: 16, color: message.type === 'success' ? '#10b981' : '#ef4444', fontSize: '0.9rem' }}>{message.text}</div>}
             </form>
           </div>
@@ -381,15 +381,15 @@ export default function VendorDashboard() {
   };
 
   return (
-    <div className="saas-dashboard vendor-mode">
+    <div className="saas-dashboard partner-mode">
       <aside className="saas-sidebar">
         <div className="saas-sidebar-header">
           <div className="saas-brand-icon"><MapPin size={20} /></div>
-          <span className="saas-brand-text">GeoVendor</span>
+          <span className="saas-brand-text">GeoVendor Partner</span>
         </div>
         
         <div className="saas-nav-group">
-          <div className="saas-nav-label">SELLER HUB</div>
+          <div className="saas-nav-label">PARTNER HUB</div>
           {tabs.map(tab => (
              <div key={tab.key} className={`saas-nav-item ${activeTab === tab.key ? 'active' : ''}`} onClick={() => setActiveTab(tab.key)}>
                 <span className="saas-nav-icon">{tab.icon}</span>{tab.label}
@@ -403,7 +403,7 @@ export default function VendorDashboard() {
               {v?.profilePic ? <img src={`/${v.profilePic.replace(/\\\\/g, '/')}`} alt="" /> : <Store size={20} color="#71717a" />}
             </div>
             <div className="saas-user-info">
-              <div className="saas-user-name">{v?.name || 'Vendor'}</div>
+              <div className="saas-user-name">{v?.name || 'Partner'}</div>
               <div className="saas-user-role">Business Partner</div>
             </div>
           </div>
