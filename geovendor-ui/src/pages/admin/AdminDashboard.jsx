@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Store, Mail, Star, MessageSquare, PieChart, ShieldCheck, LogOut, Search } from 'lucide-react';
+import { Users, Store, Mail, Star, MessageSquare, PieChart, ShieldCheck, LogOut, Search, Menu } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -50,6 +50,7 @@ export default function AdminDashboard() {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('stats');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [data, setData] = useState({});
 
   useEffect(() => {
@@ -176,7 +177,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="saas-dashboard admin-mode">
-      <aside className="saas-sidebar">
+      {sidebarOpen && <div className="saas-sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
+      <aside className={`saas-sidebar ${sidebarOpen ? 'mobile-open' : ''}`}>
         <div className="saas-sidebar-header">
           <div className="saas-brand-icon"><ShieldCheck size={20} /></div>
           <span className="saas-brand-text">GeoVendor Admin</span>
@@ -185,7 +187,7 @@ export default function AdminDashboard() {
         <div className="saas-nav-group">
           <div className="saas-nav-label">COMMAND CENTER</div>
           {tabs.map(tab => (
-             <div key={tab.key} className={`saas-nav-item ${activeTab === tab.key ? 'active' : ''}`} onClick={() => switchTab(tab.key)}>
+             <div key={tab.key} className={`saas-nav-item ${activeTab === tab.key ? 'active' : ''}`} onClick={() => { switchTab(tab.key); setSidebarOpen(false); }}>
                 <span className="saas-nav-icon">{tab.icon}</span>{tab.label}
              </div>
           ))}
@@ -206,9 +208,14 @@ export default function AdminDashboard() {
 
       <main className="saas-main">
         <header className="saas-topbar">
-          <div className="saas-breadcrumb">
-            {tabs.find(t => t.key === activeTab)?.icon} 
-            {tabs.find(t => t.key === activeTab)?.label}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button className="saas-mobile-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <Menu size={20} />
+            </button>
+            <div className="saas-breadcrumb">
+              {tabs.find(t => t.key === activeTab)?.icon} 
+              {tabs.find(t => t.key === activeTab)?.label}
+            </div>
           </div>
           <div className="saas-topbar-actions">
             <button className="saas-btn-outline" onClick={() => navigate('/')}>Home Portal</button>

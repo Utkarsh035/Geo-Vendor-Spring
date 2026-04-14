@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Star, Tags, ArrowRight, Sparkles, User, Navigation, Shield, Zap, ChevronRight, Store } from 'lucide-react';
+import { MapPin, Star, Tags, ArrowRight, Sparkles, User, Navigation, Shield, Zap, ChevronRight, Store, Mail } from 'lucide-react';
 import api from '../services/api';
 import './Home.css';
 
@@ -73,7 +73,7 @@ export default function Home() {
         <div className="hero-gradient-mesh"></div>
         <div className="hero-grid-pattern"></div>
         <div className="hero-radial-glow"></div>
-        
+
         <motion.div
           className="hero-inner"
           initial="hidden"
@@ -84,27 +84,27 @@ export default function Home() {
             <span className="hero-chip-dot"></span>
             <Sparkles size={13} /> Platform v2.0 — Now with Live Tracking
           </motion.div>
-          
+
           <motion.h1 variants={fadeUp} className="hero-headline">
-            Find Trusted <span className="hero-gradient-word">Partners</span><br />
-            Around Your Location
+            Find Trusted <span className="hero-gradient-word">Businesses</span><br />
+            Right Where You Are
           </motion.h1>
-          
+
           <motion.p variants={fadeUp} className="hero-desc">
             Discover shops, restaurants, hospitals, and services — all mapped in real-time
             around your exact GPS coordinates. Track vendors live, read reviews, and connect instantly.
           </motion.p>
-          
+
           <motion.div variants={fadeUp} className="hero-cta-row">
             <button className="hero-btn-primary" onClick={() => navigate('/user-login')}>
-              <User size={18} /> Get Started Free
+              <User size={18} /> User Login
               <ChevronRight size={16} />
             </button>
-            <button className="hero-btn-secondary" onClick={() => navigate('/partner-login')}>
-              <Store size={18} /> Partner Portal
+            <button className="hero-btn-secondary" onClick={() => navigate('/user-register')}>
+              <User size={18} /> User Registration
             </button>
           </motion.div>
-          
+
           <motion.div variants={fadeUp} className="hero-trust">
             <div className="hero-trust-avatars">
               {['#6366f1', '#a855f7', '#ec4899', '#22d3ee'].map((c, i) => (
@@ -116,7 +116,7 @@ export default function Home() {
         </motion.div>
 
         {/* Floating Stats Cards */}
-        <motion.div 
+        <motion.div
           className="hero-float-card hero-float-1"
           initial={{ opacity: 0, x: -60 }}
           animate={{ opacity: 1, x: 0 }}
@@ -128,7 +128,7 @@ export default function Home() {
             <div className="hero-float-label">GPS Tracking</div>
           </div>
         </motion.div>
-        <motion.div 
+        <motion.div
           className="hero-float-card hero-float-2"
           initial={{ opacity: 0, x: 60 }}
           animate={{ opacity: 1, x: 0 }}
@@ -143,7 +143,7 @@ export default function Home() {
       </div>
 
       {/* ====== STATS BAR ====== */}
-      <motion.div 
+      <motion.div
         className="stats-bar"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -179,15 +179,15 @@ export default function Home() {
             <h2 className="section-title">Get started in 3 simple steps</h2>
             <p className="section-subtitle">From signup to discovering your nearest partner in under a minute</p>
           </motion.div>
-          
+
           <div className="how-steps">
             {[
               { step: '01', icon: <User size={28} />, title: 'Create Account', desc: 'Sign up in seconds with your email. No credit card required — completely free for users.' },
               { step: '02', icon: <MapPin size={28} />, title: 'Allow Location', desc: 'Enable GPS and we\'ll automatically find all registered businesses within 5 km of you.' },
               { step: '03', icon: <Navigation size={28} />, title: 'Track & Connect', desc: 'View vendor details, get live directions, call directly, and track in real-time on the map.' },
             ].map((item, idx) => (
-              <motion.div 
-                className="how-step-card" 
+              <motion.div
+                className="how-step-card"
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -216,7 +216,7 @@ export default function Home() {
           >
             <span className="section-chip">Features</span>
             <h2 className="section-title">Everything you need</h2>
-            <p className="section-subtitle">Powerful tools for both users and business owners</p>
+            <p className="section-subtitle">Powerful tools to discover and track local services</p>
           </motion.div>
 
           <div className="features-v2-grid">
@@ -300,7 +300,7 @@ export default function Home() {
 
       {/* ====== CTA BANNER ====== */}
       <div className="cta-banner">
-        <motion.div 
+        <motion.div
           className="cta-banner-inner"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -314,8 +314,8 @@ export default function Home() {
             <button className="hero-btn-primary" onClick={() => navigate('/user-register')}>
               Start Exploring <ArrowRight size={16} />
             </button>
-            <button className="hero-btn-secondary" onClick={() => navigate('/partner-register')}>
-              Become a Partner
+            <button className="hero-btn-secondary" onClick={() => navigate('/contact')}>
+              Have Questions? <Mail size={16} />
             </button>
           </div>
         </motion.div>

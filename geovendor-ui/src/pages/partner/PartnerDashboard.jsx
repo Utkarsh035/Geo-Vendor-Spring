@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Edit3, Briefcase, MapPin, Star, DoorOpen, DoorClosed, Play, StopCircle, Info, Phone, CreditCard, Crosshair, Satellite, Store, LogOut, FileImage } from 'lucide-react';
+import { User, Edit3, Briefcase, MapPin, Star, DoorOpen, DoorClosed, Play, StopCircle, Info, Phone, CreditCard, Crosshair, Satellite, Store, LogOut, FileImage, Menu, X } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -28,6 +28,7 @@ export default function PartnerDashboard() {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('business');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const [vendorData, setVendorData] = useState(null);
   const [editForm, setEditForm] = useState({ name: '', phone: '', city: '', address: '' });
@@ -172,7 +173,7 @@ export default function PartnerDashboard() {
                   </button>
                 </div>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 24, opacity: b.isActive === false ? 0.6 : 1 }}>
+                <div className="business-detail-grid">
                   <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><Info size={18} className="partner-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>Description</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.description || '-')}</div></div></div>
                   <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><Phone size={18} className="partner-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>Phone</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.phone || '-')}</div></div></div>
                   <div style={{ display: 'flex', gap: 12, color: '#a1a1aa' }}><CreditCard size={18} className="partner-mode" style={{ color: '#f472b6' }} /><div><div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>GST No</div><div style={{ color: '#f4f4f5', fontSize: '0.9rem' }}>{escapeHtml(b.gstNo || '-')}</div></div></div>
@@ -184,11 +185,11 @@ export default function PartnerDashboard() {
               <div className="saas-card" style={{ opacity: b.isActive === false ? 0.5 : 1, pointerEvents: b.isActive === false ? 'none' : 'auto' }}>
                 <h3 style={{ fontSize: '1.1rem', marginBottom: 24, color: '#f4f4f5' }}>Update Details</h3>
                 <form onSubmit={handleEditBusiness}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="form-grid-2col">
                     <div className="saas-form-group"><label>Business Name</label><input type="text" name="editBizName" defaultValue={b.businessName || ''} required /></div>
                     <div className="saas-form-group"><label>Phone</label><input type="text" name="editBizPhone" defaultValue={b.phone || ''} required /></div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 2fr', gap: 16 }}>
+                  <div className="form-grid-2col">
                     <div className="saas-form-group"><label>GST No (Optional)</label><input type="text" name="editBizGst" defaultValue={b.gstNo || ''} /></div>
                     <div className="saas-form-group"><label>Address</label><input type="text" name="editBizAddress" defaultValue={b.address || ''} required /></div>
                   </div>
@@ -204,7 +205,7 @@ export default function PartnerDashboard() {
                <p style={{ color: '#a1a1aa', fontSize: '1.05rem', marginBottom: 40 }}>Add your business details below to start appearing on the map for thousands of local users.</p>
                
                <form onSubmit={handleAddBusiness} style={{ textAlign: 'left' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="form-grid-2col">
                     <div className="saas-form-group"><label>Business Name</label><input type="text" name="bizName" required /></div>
                     <div className="saas-form-group"><label>Category</label>
                       <select name="bizCategory" required>
@@ -215,7 +216,7 @@ export default function PartnerDashboard() {
                     </div>
                   </div>
                   <div className="saas-form-group"><label>Description</label><textarea name="bizDesc" rows="2" placeholder="Tell customers about what you do..."></textarea></div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 2fr', gap: 16 }}>
+                  <div className="form-grid-2col">
                     <div className="saas-form-group"><label>Contact Phone</label><input type="text" name="bizPhone" required /></div>
                     <div className="saas-form-group"><label>GST No (Optional)</label><input type="text" name="bizGst" /></div>
                   </div>
@@ -314,7 +315,7 @@ export default function PartnerDashboard() {
     
     if (activeTab === 'profile') {
       return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: 32 }}>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="profile-grid-layout">
           <div className="saas-card" style={{ alignSelf: 'start' }}>
             <h3 style={{ fontSize: '1rem', marginBottom: 20, color: '#f4f4f5' }}>Owner Information</h3>
             {!v ? <div style={{ color: '#71717a' }}>Loading...</div> : (
@@ -336,11 +337,11 @@ export default function PartnerDashboard() {
           <div className="saas-card" style={{ alignSelf: 'start' }}>
             <h3 style={{ fontSize: '1rem', marginBottom: 20, color: '#f4f4f5' }}>Update Personal Details</h3>
             <form onSubmit={handleEditSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-grid-2col">
                 <div className="saas-form-group"><label>Full Name</label><input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} required /></div>
                 <div className="saas-form-group"><label>Phone Number</label><input type="text" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} required /></div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-grid-2col">
                 <div className="saas-form-group"><label>City</label><input type="text" value={editForm.city} onChange={(e) => setEditForm({ ...editForm, city: e.target.value })} required /></div>
                 <div className="saas-form-group"><label>Address</label><input type="text" value={editForm.address} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} required /></div>
               </div>
@@ -360,7 +361,7 @@ export default function PartnerDashboard() {
             <p style={{ color: '#a1a1aa', fontSize: '0.9rem', marginBottom: 24 }}>How can we improve the GeoVendor platform for your business operations?</p>
             
             <form onSubmit={handleFeedbackSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-grid-2col">
                 <div className="saas-form-group"><label>Name</label><input type="text" name="fbName" defaultValue={v?.name || ''} required /></div>
                 <div className="saas-form-group"><label>Email</label><input type="email" name="fbEmail" defaultValue={v?.email || ''} required /></div>
               </div>
@@ -382,7 +383,8 @@ export default function PartnerDashboard() {
 
   return (
     <div className="saas-dashboard partner-mode">
-      <aside className="saas-sidebar">
+      {sidebarOpen && <div className="saas-sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
+      <aside className={`saas-sidebar ${sidebarOpen ? 'mobile-open' : ''}`}>
         <div className="saas-sidebar-header">
           <div className="saas-brand-icon"><MapPin size={20} /></div>
           <span className="saas-brand-text">GeoVendor Partner</span>
@@ -391,7 +393,7 @@ export default function PartnerDashboard() {
         <div className="saas-nav-group">
           <div className="saas-nav-label">PARTNER HUB</div>
           {tabs.map(tab => (
-             <div key={tab.key} className={`saas-nav-item ${activeTab === tab.key ? 'active' : ''}`} onClick={() => setActiveTab(tab.key)}>
+             <div key={tab.key} className={`saas-nav-item ${activeTab === tab.key ? 'active' : ''}`} onClick={() => { setActiveTab(tab.key); setSidebarOpen(false); }}>
                 <span className="saas-nav-icon">{tab.icon}</span>{tab.label}
              </div>
           ))}
@@ -412,9 +414,14 @@ export default function PartnerDashboard() {
 
       <main className="saas-main">
         <header className="saas-topbar">
-          <div className="saas-breadcrumb">
-            {tabs.find(t => t.key === activeTab)?.icon} 
-            {tabs.find(t => t.key === activeTab)?.label}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button className="saas-mobile-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <Menu size={20} />
+            </button>
+            <div className="saas-breadcrumb">
+              {tabs.find(t => t.key === activeTab)?.icon} 
+              {tabs.find(t => t.key === activeTab)?.label}
+            </div>
           </div>
           <div className="saas-topbar-actions">
             <button className="saas-btn-outline" onClick={() => navigate('/')}><MapPin size={16} /> Public Map</button>

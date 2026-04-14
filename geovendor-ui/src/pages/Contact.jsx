@@ -43,7 +43,7 @@ export default function Contact() {
           <p className="section-subtitle">Have questions or need support? We'd love to hear from you.</p>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: 40, alignItems: 'start' }}>
+        <div className="contact-grid-layout">
           {/* Left — Info Cards */}
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
             <div style={{ display: 'grid', gap: 16 }}>

@@ -420,6 +420,23 @@
 }
 
 /* ====== Responsive ====== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .hero-inner {
+    padding: 100px 20px 60px;
+  }
+  .stats-bar-inner {
+    padding: 32px 20px;
+    gap: 20px;
+  }
+  .how-section { padding: 80px 20px; }
+  .features-v2 { padding: 80px 20px; }
+  .testimonials-section { padding: 80px 20px; }
+  .how-steps { gap: 24px; }
+  .features-v2-grid { gap: 16px; }
+}
+
 @media (max-width: 768px) {
   .hero-float-card { display: none; }
   .stats-bar-inner { grid-template-columns: repeat(2, 1fr); }
@@ -428,11 +445,36 @@
   .testimonials-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
   .cta-banner-inner { padding: 40px 24px; }
+  .hero-inner { padding: 80px 20px 60px; }
+  .how-section { padding: 60px 16px; }
+  .features-v2 { padding: 60px 16px; }
+  .testimonials-section { padding: 60px 16px; }
+  .cta-banner { padding: 24px 16px 60px; }
+  .how-step-card { padding: 28px 20px; }
+  .feat-card { padding: 24px 20px; }
+  .testimonial-card { padding: 24px; }
+  .how-header { margin-bottom: 40px; }
+  .cta-banner-inner h2 { font-size: 1.6rem; }
+  .section-title { font-size: 1.6rem; }
 }
+
 @media (max-width: 480px) {
   .stats-bar-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .stats-bar-value { font-size: 1.5rem; }
+  .stats-bar-label { font-size: 0.75rem; }
   .hero-cta-row { flex-direction: column; align-items: center; }
   .hero-btn-primary, .hero-btn-secondary { width: 100%; justify-content: center; }
   .cta-banner-btns { flex-direction: column; align-items: center; }
+  .cta-banner-btns button { width: 100%; }
+  .hero-headline { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+  .hero-desc { font-size: 0.95rem; }
+  .hero-inner { padding: 60px 16px 40px; max-width: 100%; }
+  .hero-chip { font-size: 0.72rem; padding: 6px 14px; }
+  .how-step-number { font-size: 2.5rem; }
+  .how-step-icon { width: 48px; height: 48px; }
+  .cta-banner-inner h2 { font-size: 1.4rem; }
+  .cta-banner-inner p { font-size: 0.9rem; }
+  .section-title { font-size: 1.4rem; }
+  .section-subtitle { font-size: 0.88rem; }
+  .section-chip { font-size: 0.7rem; padding: 4px 12px; }
 }

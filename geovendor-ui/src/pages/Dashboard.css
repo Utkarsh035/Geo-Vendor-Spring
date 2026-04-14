@@ -389,3 +389,345 @@
   background: white;
   border-radius: 2px 2px 0 0;
 }
+
+/* --- Sidebar Overlay (mobile backdrop) --- */
+.saas-sidebar-overlay {
+  display: none;
+}
+
+/* --- Layout Utility Classes --- */
+.profile-grid-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) 2fr;
+  gap: 32px;
+}
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.business-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 24px;
+}
+.business-detail-grid > div:last-child {
+  grid-column: 1 / -1;
+}
+
+/* --- Tracking Modal --- */
+.tracking-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.tracking-modal-container {
+  width: 100%;
+  max-width: 1000px;
+  max-height: 95vh;
+  background: #09090b;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+.tracking-modal-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.02);
+}
+.tracking-modal-footer {
+  padding: 24px 32px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.tracking-modal-stats {
+  display: flex;
+  gap: 32px;
+}
+.tracking-modal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* --- Location Mode Buttons --- */
+.location-mode-btns {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* ====== SaaS Dashboard Responsive ====== */
+
+/* Mobile toggle button for sidebar */
+.saas-mobile-toggle {
+  display: none;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 8px;
+  color: #a1a1aa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.saas-mobile-toggle:hover {
+  background: rgba(255,255,255,0.05);
+  color: #f4f4f5;
+}
+
+/* --- Tablet (≤1024px) --- */
+@media (max-width: 1024px) {
+  .saas-sidebar {
+    width: 240px;
+    padding: 20px 12px;
+  }
+  .saas-topbar {
+    padding: 0 24px;
+  }
+  .saas-content-area {
+    padding: 28px 24px;
+  }
+  .saas-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .saas-table th, .saas-table td {
+    padding: 12px 16px;
+  }
+}
+
+/* --- Mobile (≤768px) --- */
+@media (max-width: 768px) {
+  .saas-dashboard {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .saas-mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .saas-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 16px 12px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background: rgba(3, 3, 5, 0.98);
+    backdrop-filter: blur(30px);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .saas-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .saas-sidebar-header {
+    padding: 0 12px 20px;
+  }
+
+  .saas-main {
+    width: 100%;
+  }
+  .saas-topbar {
+    height: 60px;
+    padding: 0 16px;
+    gap: 8px;
+  }
+  .saas-breadcrumb {
+    font-size: 0.95rem;
+  }
+  .saas-topbar-actions {
+    gap: 8px;
+  }
+  .saas-topbar-actions .saas-btn-outline {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  /* Hide text on small topbar buttons, keep icons */
+  .saas-topbar-actions .saas-btn-outline span {
+    display: none;
+  }
+
+  .saas-content-area {
+    padding: 20px 16px;
+  }
+  .saas-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .saas-card {
+    padding: 20px;
+  }
+  .saas-search {
+    max-width: 100%;
+  }
+  .saas-tabs-header {
+    gap: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .saas-tabs-header::-webkit-scrollbar { display: none; }
+  .saas-tab-btn {
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+
+  /* Data tables — horizontal scroll */
+  .saas-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .saas-table {
+    min-width: 600px;
+  }
+  .saas-table th, .saas-table td {
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  /* Forms — stack columns */
+  .saas-form-group input, .saas-form-group select, .saas-form-group textarea {
+    padding: 10px 14px;
+  }
+
+  /* Biz meta stacking */
+  .biz-meta {
+    flex-wrap: wrap;
+  }
+
+  /* Sidebar overlay */
+  .saas-sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 99;
+  }
+
+  /* Profile layout stacking */
+  .profile-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .form-grid-2col {
+    grid-template-columns: 1fr;
+  }
+  .business-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .business-detail-grid > div:last-child {
+    grid-column: auto;
+  }
+
+  /* Tracking modal */
+  .tracking-modal-overlay {
+    padding: 0;
+  }
+  .tracking-modal-container {
+    max-height: 100vh;
+    border-radius: 0;
+    max-width: 100%;
+  }
+  .tracking-modal-header {
+    padding: 16px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .tracking-modal-footer {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .tracking-modal-stats {
+    gap: 20px;
+    justify-content: space-around;
+  }
+  .tracking-modal-actions {
+    justify-content: stretch;
+  }
+  .tracking-modal-actions button {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  /* Location mode buttons */
+  .location-mode-btns {
+    flex-direction: column;
+  }
+}
+
+/* --- Small phones (≤480px) --- */
+@media (max-width: 480px) {
+  .saas-topbar {
+    height: 56px;
+    padding: 0 12px;
+  }
+  .saas-breadcrumb {
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+  .saas-content-area {
+    padding: 16px 12px;
+  }
+  .saas-card {
+    padding: 16px;
+    border-radius: 10px;
+  }
+  .saas-grid {
+    gap: 12px;
+  }
+  .saas-search input {
+    padding: 12px 16px 12px 40px;
+    font-size: 0.88rem;
+  }
+  .saas-table {
+    min-width: 500px;
+  }
+  .saas-table th, .saas-table td {
+    padding: 10px 12px;
+    font-size: 0.78rem;
+  }
+  .saas-btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+  .tracking-modal-actions {
+    flex-direction: column;
+  }
+  .tracking-modal-actions button {
+    width: 100%;
+  }
+}

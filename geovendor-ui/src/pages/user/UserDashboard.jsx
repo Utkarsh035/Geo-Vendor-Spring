@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Edit3, Map, Star, Search, X, MapPin, Phone, Info, CreditCard, Navigation, Clock, Circle, ExternalLink, PhoneCall, LogOut, Compass, Heart } from 'lucide-react';
+import { User, Edit3, Map, Star, Search, X, MapPin, Phone, Info, CreditCard, Navigation, Clock, Circle, ExternalLink, PhoneCall, LogOut, Compass, Heart, Menu } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -34,6 +34,7 @@ export default function UserDashboard() {
   const [userLocation, setUserLocation] = useState(null);
   const [locationStatus, setLocationStatus] = useState('detecting');
   const [trackingBusiness, setTrackingBusiness] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isTrackingMode, setIsTrackingMode] = useState(false);
   const [favEmails, setFavEmails] = useState([]);
   const [favBusinesses, setFavBusinesses] = useState(null);
@@ -322,7 +323,7 @@ export default function UserDashboard() {
 
     if (activeTab === 'profile') {
       return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: 32 }}>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="profile-grid-layout">
           
           <div className="saas-card" style={{ alignSelf: 'start' }}>
             <h3 style={{ fontSize: '1rem', marginBottom: 20, color: '#f4f4f5' }}>Profile Information</h3>
@@ -346,11 +347,11 @@ export default function UserDashboard() {
           <div className="saas-card" style={{ alignSelf: 'start' }}>
             <h3 style={{ fontSize: '1rem', marginBottom: 20, color: '#f4f4f5' }}>Edit Profile</h3>
             <form onSubmit={handleEditSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-grid-2col">
                 <div className="saas-form-group"><label>Full Name</label><input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} required /></div>
                 <div className="saas-form-group"><label>Phone Number</label><input type="text" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} required /></div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-grid-2col">
                 <div className="saas-form-group"><label>City</label><input type="text" value={editForm.city} onChange={(e) => setEditForm({ ...editForm, city: e.target.value })} required /></div>
                 <div className="saas-form-group"><label>Full Address</label><input type="text" value={editForm.address} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} required /></div>
               </div>
@@ -375,7 +376,7 @@ export default function UserDashboard() {
             <p style={{ color: '#a1a1aa', fontSize: '0.9rem', marginBottom: 24 }}>Help us improve GeoVendor by sharing your experience.</p>
             
             <form onSubmit={handleFeedbackSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-grid-2col">
                 <div className="saas-form-group"><label>Name</label><input type="text" name="fbName" defaultValue={profile?.name || ''} required /></div>
                 <div className="saas-form-group"><label>Email</label><input type="email" name="fbEmail" defaultValue={profile?.email || ''} required /></div>
               </div>
@@ -397,7 +398,9 @@ export default function UserDashboard() {
 
   return (
     <div className="saas-dashboard">
-      <aside className="saas-sidebar">
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && <div className="saas-sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
+      <aside className={`saas-sidebar ${sidebarOpen ? 'mobile-open' : ''}`}>
         <div className="saas-sidebar-header">
           <div className="saas-brand-icon"><MapPin size={20} /></div>
           <span className="saas-brand-text">GeoVendor</span>
@@ -412,6 +415,7 @@ export default function UserDashboard() {
               onClick={() => {
                 setActiveTab(tab.key);
                 if (tab.key !== 'map') stopLiveTracking();
+                setSidebarOpen(false);
               }}
             >
               <span className="saas-nav-icon">{tab.icon}</span>
@@ -435,9 +439,14 @@ export default function UserDashboard() {
 
       <main className="saas-main">
         <header className="saas-topbar">
-          <div className="saas-breadcrumb">
-            {tabs.find(t => t.key === activeTab)?.icon} 
-            {tabs.find(t => t.key === activeTab)?.label}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button className="saas-mobile-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <Menu size={20} />
+            </button>
+            <div className="saas-breadcrumb">
+              {tabs.find(t => t.key === activeTab)?.icon} 
+              {tabs.find(t => t.key === activeTab)?.label}
+            </div>
           </div>
           <div className="saas-topbar-actions">
             <button className="saas-btn-outline" onClick={() => navigate('/')}><MapPin size={16} /> Public Map</button>
@@ -455,11 +464,11 @@ export default function UserDashboard() {
 
         {/* Live Tracking Modal Overlay */}
         {isTrackingMode && trackingBusiness && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} style={{ width: '100%', maxWidth: 1000, maxHeight: '95vh', background: '#09090b', borderRadius: 24, border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+          <div className="tracking-modal-overlay">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="tracking-modal-container">
               
               {/* Modal Header */}
-              <div style={{ padding: '24px 32px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)' }}>
+              <div className="tracking-modal-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                   <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.4rem' }}>
                     <i className={trackingBusiness.businessIcon || 'fas fa-store'}></i>
@@ -480,8 +489,8 @@ export default function UserDashboard() {
               </div>
 
               {/* Modal Footer */}
-              <div style={{ padding: '24px 32px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: 32 }}>
+              <div className="tracking-modal-footer">
+                <div className="tracking-modal-stats">
                   <div>
                      <div style={{ fontSize: '0.75rem', color: '#71717a', textTransform: 'uppercase', marginBottom: 4, letterSpacing: '0.05em' }}>DISTANCE</div>
                      <div style={{ fontSize: '1.1rem', color: '#fff', fontWeight: 500 }}>{trackingBusiness._distance != null && trackingBusiness._distance < 1 ? Math.round(trackingBusiness._distance * 1000) + ' m' : (trackingBusiness._distance?.toFixed(1) || '-') + ' km'}</div>
@@ -492,7 +501,7 @@ export default function UserDashboard() {
                   </div>
                 </div>
                 
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                <div className="tracking-modal-actions">
                   <button onClick={stopLiveTracking} style={{ padding: '10px 20px', borderRadius: 8, background: 'none', color: '#a1a1aa', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#fff'; }} onMouseOut={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#a1a1aa'; }}>
                     Close Map
                   </button>
